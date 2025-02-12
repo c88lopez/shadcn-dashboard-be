@@ -36,10 +36,10 @@ export class UsersService {
     });
   }
 
-  update(id: number, updateUserData: Prisma.UserUpdateInput) {
+  async update(cuid: string, updateUserData: Prisma.UserUpdateInput) {
     return this.prismaService.user.update({
       where: {
-        id,
+        cuid,
       },
       data: updateUserData,
     });
