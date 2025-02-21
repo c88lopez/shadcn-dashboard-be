@@ -6,16 +6,21 @@ import {
   Patch,
   Param,
   Delete,
+  Logger,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Prisma } from '@prisma/client';
 
 @Controller('users')
 export class UsersController {
+  private readonly logger = new Logger(UsersController.name);
+
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
   create(@Body() data: Prisma.UserCreateInput) {
+    this.logger.log('Creating a new user', { data });
+
     return this.usersService.create(data);
   }
 
@@ -24,9 +29,9 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  @Get(':cuid')
+  findOne(@Param('cuid') cuid: string) {
+    return this.usersService.findOne(cuid);
   }
 
   @Patch(':cuid')
@@ -37,8 +42,8 @@ export class UsersController {
     return this.usersService.update(cuid, updateUserData);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  @Delete(':cuid')
+  remove(@Param('id') cuid: string) {
+    return this.usersService.remove(cuid);
   }
 }

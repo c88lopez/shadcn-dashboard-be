@@ -1,16 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
+
   constructor(private prismaService: PrismaService) {}
 
   async create(data: Prisma.UserCreateInput) {
     try {
       const createResult = await this.prismaService.user.create({ data });
 
-      return this.findOne(createResult.id);
+      this.logger.log('createResult', createResult);
+
+      return this.findOne(createResult.cuid);
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
@@ -18,6 +22,12 @@ export class UsersService {
             message: 'User with this email already exists',
           };
         }
+      }
+
+      if (error instanceof Prisma.PrismaClientValidationError) {
+        return {
+          message: 'Invalid payload',
+        };
       }
     }
 
@@ -28,10 +38,10 @@ export class UsersService {
     return this.prismaService.user.findMany();
   }
 
-  findOne(id: number) {
+  findOne(cuid: string) {
     return this.prismaService.user.findUniqueOrThrow({
       where: {
-        id,
+        cuid,
       },
     });
   }
@@ -45,10 +55,10 @@ export class UsersService {
     });
   }
 
-  remove(id: number) {
+  remove(cuid: string) {
     return this.prismaService.user.delete({
       where: {
-        id,
+        cuid,
       },
     });
   }

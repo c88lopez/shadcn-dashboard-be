@@ -7,6 +7,9 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
+import { GraphQLError, GraphQLFormattedError } from 'graphql/error';
+import { APP_FILTER } from '@nestjs/core';
+import { GraphqlExceptionFilter } from './graphql-exception.filter';
 
 @Module({
   imports: [
@@ -18,9 +21,15 @@ import { UsersModule } from './users/users.module';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: 'src/schema.gql',
+      formatError: (error: GraphQLError): GraphQLFormattedError => ({
+        message: error.message,
+      }),
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    { provide: APP_FILTER, useClass: GraphqlExceptionFilter },
+  ],
 })
 export class AppModule {}
