@@ -4,7 +4,6 @@ import { User } from './models/user.model';
 import { UsersService } from './users.service';
 import { UserCreateInput } from './inputs/createUser.input';
 import { UserUpdateInput } from './inputs/updateUser.input';
-import { GraphQLError } from 'graphql/error';
 import { GraphQLException } from '@nestjs/graphql/dist/exceptions';
 import { HttpStatus } from '@nestjs/common';
 
