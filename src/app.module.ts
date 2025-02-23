@@ -21,7 +21,7 @@ import { GraphqlExceptionFilter } from './graphql-exception.filter';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: 'src/schema.gql',
-      formatError: (error: GraphQLError): GraphQLFormattedError => ({
+      formatError: (error: GraphQLFormattedError): GraphQLFormattedError => ({
         message: error.message,
       }),
     }),
