@@ -4,8 +4,9 @@ import { User } from './models/user.model';
 import { UsersService } from './users.service';
 import { UserCreateInput } from './inputs/createUser.input';
 import { UserUpdateInput } from './inputs/updateUser.input';
-import { GraphQLException } from '@nestjs/graphql/dist/exceptions';
-import { HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus } from '@nestjs/common';
+
+import { UserSchema } from 'schemas';
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -21,6 +22,17 @@ export class UsersResolver {
     @Args({ name: 'createUserData', type: () => UserCreateInput })
     createUserData: UserCreateInput,
   ) {
+    const validation = UserSchema.omit({ cuid: true }).safeParse(
+      createUserData,
+    );
+
+    if (!validation.success) {
+      throw new HttpException(
+        validation.error.issues[0].message,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     return this.usersService.create(createUserData);
   }
 
@@ -40,9 +52,7 @@ export class UsersResolver {
     try {
       userToDelete = await this.usersService.findOne(cuid);
     } catch (error) {
-      throw new GraphQLException('User not found', {
-        extensions: { http: { status: HttpStatus.NOT_FOUND } },
-      });
+      throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
     }
 
     await this.usersService.remove(cuid);

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { Prisma } from '@prisma/client';
 
@@ -14,16 +14,15 @@ export class UsersService {
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
-          return {
-            message: 'User with this email already exists',
-          };
+          throw new HttpException(
+            'User with this email already exists',
+            HttpStatus.BAD_REQUEST,
+          );
         }
       }
 
       if (error instanceof Prisma.PrismaClientValidationError) {
-        return {
-          message: 'Invalid payload',
-        };
+        throw new HttpException('Invalid payload', HttpStatus.BAD_REQUEST);
       }
     }
 
