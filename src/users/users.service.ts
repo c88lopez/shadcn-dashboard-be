@@ -1,3 +1,4 @@
+import * as bcrypt from 'bcrypt';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { Prisma } from '@prisma/client';
@@ -8,7 +9,14 @@ export class UsersService {
 
   async create(data: Prisma.UserCreateInput) {
     try {
-      const createResult = await this.prismaService.user.create({ data });
+      const hashedPassword = await bcrypt.hash(data.password, 10);
+
+      const createResult = await this.prismaService.user.create({
+        data: {
+          ...data,
+          password: hashedPassword,
+        },
+      });
 
       return this.findOne(createResult.cuid);
     } catch (error) {
@@ -37,6 +45,14 @@ export class UsersService {
     return this.prismaService.user.findUniqueOrThrow({
       where: {
         cuid,
+      },
+    });
+  }
+
+  findByEmail(email: string) {
+    return this.prismaService.user.findUnique({
+      where: {
+        email,
       },
     });
   }
