@@ -10,6 +10,7 @@ import { UsersModule } from './users/users.module';
 import { GraphQLError, GraphQLFormattedError } from 'graphql/error';
 import { APP_FILTER } from '@nestjs/core';
 import { GraphqlExceptionFilter } from './graphql-exception.filter';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { GraphqlExceptionFilter } from './graphql-exception.filter';
         message: error.message,
       }),
     }),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [
