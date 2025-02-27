@@ -10,7 +10,7 @@ async function main() {
   const adminCredentials = {
     username: 'admin',
     email: 'admin@vandelay-labs.com',
-    password: '13245678',
+    password: '12345678',
   };
 
   const hashedPassword = await bcrypt.hash(
