@@ -38,7 +38,7 @@ export class UsersService {
   }
 
   findAll() {
-    return this.prismaService.user.findMany();
+    return this.prismaService.user.findMany({ orderBy: { id: 'asc' } });
   }
 
   findOne(cuid: string) {
