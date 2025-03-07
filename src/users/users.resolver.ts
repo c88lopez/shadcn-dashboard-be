@@ -6,18 +6,22 @@ import { User } from './models/user.model';
 import { UsersService } from './users.service';
 import { UserCreateInput } from './inputs/createUser.input';
 import { UserUpdateInput } from './inputs/updateUser.input';
-import { HttpException, HttpStatus, UseGuards } from '@nestjs/common';
+import { HttpException, HttpStatus, Logger, UseGuards } from '@nestjs/common';
 
 import { UserCreateSchema, UserUpdateSchema } from 'schemas';
 import { GqlAuthGuard } from '../auth/gql-auth.guard';
 
 @Resolver(() => User)
 export class UsersResolver {
+  private readonly logger = new Logger(UsersResolver.name);
+
   constructor(private readonly usersService: UsersService) {}
 
   @Query(() => [User])
   @UseGuards(GqlAuthGuard)
   async Users() {
+    this.logger.debug('Resolving findAll users');
+
     return this.usersService.findAll();
   }
 
