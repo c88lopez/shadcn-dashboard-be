@@ -30,6 +30,8 @@ export class UsersResolver {
     @Args({ name: 'createUserData', type: () => UserCreateInput })
     createUserData: UserCreateInput,
   ) {
+    this.logger.debug('Resolving create user');
+
     const validation = UserCreateSchema.safeParse(createUserData);
 
     if (!validation.success) {
@@ -48,6 +50,8 @@ export class UsersResolver {
     @Args({ name: 'updateUserData', type: () => UserUpdateInput })
     updateUserData: UserUpdateInput,
   ) {
+    this.logger.debug('Resolving update users');
+
     const validation = UserUpdateSchema.safeParse(updateUserData);
 
     if (!validation.success) {
@@ -68,6 +72,8 @@ export class UsersResolver {
 
   @Mutation(() => User)
   async deleteUser(@Args({ name: 'cuid', type: () => String }) cuid: string) {
+    this.logger.debug('Resolving delete user');
+
     let userToDelete = {};
 
     try {
