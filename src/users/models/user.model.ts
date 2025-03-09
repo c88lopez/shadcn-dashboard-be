@@ -23,5 +23,5 @@ export class Team {
   name: string;
 
   @Field(() => [User], { nullable: true })
-  users?: User[]; // Test comment 1
+  users?: User[]; // Test comment 2
 }
