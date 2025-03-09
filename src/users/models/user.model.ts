@@ -21,4 +21,7 @@ export class User {
 export class Team {
   @Field()
   name: string;
+
+  @Field(() => [User], { nullable: true })
+  users?: User[];
 }
