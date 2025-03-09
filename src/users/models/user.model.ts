@@ -11,5 +11,14 @@ export class User {
   @Field()
   username: string;
 
+  @Field(() => [Team], { nullable: true })
+  teams?: Team[];
+
   password: string;
+}
+
+@ObjectType({ description: 'team' })
+export class Team {
+  @Field()
+  name: string;
 }
