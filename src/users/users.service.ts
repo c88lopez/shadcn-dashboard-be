@@ -38,7 +38,12 @@ export class UsersService {
   }
 
   findAll() {
-    return this.prismaService.user.findMany({ orderBy: { id: 'asc' } });
+    return this.prismaService.user.findMany({
+      orderBy: { id: 'asc' },
+      include: {
+        teams: true,
+      },
+    });
   }
 
   findOne(cuid: string) {
