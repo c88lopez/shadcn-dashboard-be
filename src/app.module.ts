@@ -7,10 +7,11 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
-import { GraphQLError, GraphQLFormattedError } from 'graphql/error';
+import { GraphQLFormattedError } from 'graphql/error';
 import { APP_FILTER } from '@nestjs/core';
 import { GraphqlExceptionFilter } from './graphql-exception.filter';
 import { AuthModule } from './auth/auth.module';
+import { TeamsModule } from './teams/teams.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { AuthModule } from './auth/auth.module';
       }),
     }),
     AuthModule,
+    TeamsModule,
   ],
   controllers: [AppController],
   providers: [
