@@ -1,27 +1,19 @@
 import { Field, ObjectType } from '@nestjs/graphql';
+import { Team } from '../../teams/entities/team.entity';
 
 @ObjectType({ description: 'user' })
 export class User {
-  @Field()
+  @Field({ description: 'Unique identifier of the user' })
   cuid: string;
 
-  @Field()
+  @Field({ description: "User's email" })
   email: string;
 
-  @Field()
+  @Field({ description: 'Public user name of the user' })
   username: string;
 
   @Field(() => [Team], { nullable: true })
   teams?: Team[];
 
   password: string;
-}
-
-@ObjectType({ description: 'team' })
-export class Team {
-  @Field()
-  name: string;
-
-  @Field(() => [User], { nullable: true })
-  users?: User[];
 }
