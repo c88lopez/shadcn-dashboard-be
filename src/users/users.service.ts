@@ -2,19 +2,26 @@ import * as bcrypt from 'bcrypt';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { Prisma } from '@prisma/client';
+import { CreateUserInput } from './inputs/create-user.input';
 
 @Injectable()
 export class UsersService {
   constructor(private prismaService: PrismaService) {}
 
-  async create(data: Prisma.UserCreateInput) {
+  async create(createUserInput: CreateUserInput) {
     try {
-      const hashedPassword = await bcrypt.hash(data.password, 10);
+      const hashedPassword = await bcrypt.hash(createUserInput.password, 10);
 
       const createResult = await this.prismaService.user.create({
         data: {
-          ...data,
+          email: createUserInput.email,
+          username: createUserInput.username,
           password: hashedPassword,
+          teams: {
+            connect: [
+              ...(createUserInput.teams ?? []).map((cuid) => ({ cuid })),
+            ],
+          },
         },
       });
 

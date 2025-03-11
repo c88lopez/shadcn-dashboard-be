@@ -11,8 +11,6 @@ import * as bcrypt from 'bcrypt';
 
 import { User } from './models/user.entity';
 import { UsersService } from './users.service';
-import { UserCreateInput } from './inputs/createUser.input';
-import { UserUpdateInput } from './inputs/updateUser.input';
 import { HttpException, HttpStatus, Logger, UseGuards } from '@nestjs/common';
 
 import { UserCreateSchema, UserUpdateSchema } from 'schemas';
@@ -20,6 +18,8 @@ import { GqlAuthGuard } from '../auth/gql-auth.guard';
 import { Prisma } from '@prisma/client';
 import { GraphQLException } from '@nestjs/graphql/dist/exceptions';
 import { TeamsService } from '../teams/teams.service';
+import { UpdateUserInput } from './inputs/update-user.input';
+import { CreateUserInput } from './inputs/create-user.input';
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -61,8 +61,8 @@ export class UsersResolver {
 
   @Mutation(() => User)
   createUser(
-    @Args({ name: 'createUserData', type: () => UserCreateInput })
-    createUserData: UserCreateInput,
+    @Args({ name: 'createUserData', type: () => CreateUserInput })
+    createUserData: CreateUserInput,
   ) {
     this.logger.debug('Resolving createUser', { createUserData });
 
@@ -81,8 +81,8 @@ export class UsersResolver {
   @Mutation(() => User)
   async updateUser(
     @Args({ name: 'cuid', type: () => String }) cuid: string,
-    @Args({ name: 'updateUserData', type: () => UserUpdateInput })
-    updateUserData: UserUpdateInput,
+    @Args({ name: 'updateUserData', type: () => UpdateUserInput })
+    updateUserData: UpdateUserInput,
   ) {
     this.logger.debug('Resolving updateUser', { cuid, updateUserData });
 
