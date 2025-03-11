@@ -46,6 +46,18 @@ export class UsersService {
     });
   }
 
+  findAllByTeam(teamId: string) {
+    return this.prismaService.user.findMany({
+      where: {
+        teams: {
+          some: {
+            cuid: teamId,
+          },
+        },
+      },
+    });
+  }
+
   findOne(cuid: string) {
     return this.prismaService.user.findUniqueOrThrow({
       where: {

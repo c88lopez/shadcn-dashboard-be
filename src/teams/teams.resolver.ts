@@ -1,4 +1,11 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 import { TeamsService } from './teams.service';
 import { Team } from './entities/team.entity';
 import { CreateTeamInput } from './dto/create-team.input';
@@ -6,15 +13,14 @@ import { UpdateTeamInput } from './dto/update-team.input';
 import { Prisma } from '@prisma/client';
 import { GraphQLException } from '@nestjs/graphql/dist/exceptions';
 import { HttpStatus } from '@nestjs/common';
+import { UsersService } from '../users/users.service';
 
 @Resolver(() => Team)
 export class TeamsResolver {
-  constructor(private readonly teamsService: TeamsService) {}
-
-  @Mutation(() => Team)
-  createTeam(@Args('createTeamInput') createTeamInput: CreateTeamInput) {
-    return this.teamsService.create(createTeamInput);
-  }
+  constructor(
+    private readonly teamsService: TeamsService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @Query(() => [Team], { name: 'teams' })
   findAll() {
@@ -35,6 +41,16 @@ export class TeamsResolver {
         }
       }
     }
+  }
+
+  @ResolveField()
+  async users(@Parent() team: Team) {
+    return this.usersService.findAllByTeam(team.cuid);
+  }
+
+  @Mutation(() => Team)
+  createTeam(@Args('createTeamInput') createTeamInput: CreateTeamInput) {
+    return this.teamsService.create(createTeamInput);
   }
 
   @Mutation(() => Team)
