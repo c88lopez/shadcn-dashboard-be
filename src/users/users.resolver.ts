@@ -1,4 +1,11 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 
 import * as bcrypt from 'bcrypt';
 
@@ -12,12 +19,16 @@ import { UserCreateSchema, UserUpdateSchema } from 'schemas';
 import { GqlAuthGuard } from '../auth/gql-auth.guard';
 import { Prisma } from '@prisma/client';
 import { GraphQLException } from '@nestjs/graphql/dist/exceptions';
+import { TeamsService } from '../teams/teams.service';
 
 @Resolver(() => User)
 export class UsersResolver {
   private readonly logger = new Logger(UsersResolver.name);
 
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly teamsService: TeamsService,
+  ) {}
 
   @Query(() => [User], { name: 'users' })
   @UseGuards(GqlAuthGuard)
@@ -41,6 +52,11 @@ export class UsersResolver {
         }
       }
     }
+  }
+
+  @ResolveField()
+  async teams(@Parent() user: User) {
+    return this.teamsService.findAllByUser(user.cuid);
   }
 
   @Mutation(() => User)

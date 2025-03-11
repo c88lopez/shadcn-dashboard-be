@@ -49,6 +49,18 @@ export class TeamsService {
     return this.prismaService.team.findUniqueOrThrow({ where: { cuid } });
   }
 
+  findAllByUser(userId: string) {
+    return this.prismaService.team.findMany({
+      where: {
+        users: {
+          some: {
+            cuid: userId,
+          },
+        },
+      },
+    });
+  }
+
   async update(cuid: string, updateTeamInput: UpdateTeamInput) {
     this.logger.debug('Resolving team update', { updateTeamInput });
 
