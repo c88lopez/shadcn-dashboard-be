@@ -58,6 +58,8 @@ export class UsersService {
   }
 
   findAll() {
+    this.logger.debug('findAll');
+
     return this.prismaService.user.findMany({
       orderBy: { id: 'asc' },
       include: {
@@ -67,6 +69,8 @@ export class UsersService {
   }
 
   findAllByTeam(teamId: string) {
+    this.logger.debug('findAllByTeam');
+
     return this.prismaService.user.findMany({
       where: {
         teams: {
@@ -79,6 +83,8 @@ export class UsersService {
   }
 
   findOne(cuid: string) {
+    this.logger.debug('findOne');
+
     return this.prismaService.user.findUniqueOrThrow({
       where: {
         cuid,
@@ -87,6 +93,8 @@ export class UsersService {
   }
 
   findByEmail(email: string) {
+    this.logger.debug('findByEmail');
+
     return this.prismaService.user.findUnique({
       where: {
         email,
@@ -95,6 +103,8 @@ export class UsersService {
   }
 
   async update(cuid: string, updateUserInput: UpdateUserInput) {
+    this.logger.debug('update');
+
     const transactionOperations = [];
 
     if (updateUserInput.teams !== undefined) {
@@ -136,6 +146,8 @@ export class UsersService {
   }
 
   remove(cuid: string) {
+    this.logger.debug('remove');
+
     return this.prismaService.user.delete({
       where: {
         cuid,

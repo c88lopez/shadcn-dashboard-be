@@ -11,7 +11,7 @@ export class TeamsService {
   constructor(private prismaService: PrismaService) {}
 
   async create(createTeamInput: CreateTeamInput) {
-    this.logger.debug('Resolving team creation', { createTeamInput });
+    this.logger.debug('create', { createTeamInput });
 
     try {
       const createResult = await this.prismaService.team.create({
@@ -40,21 +40,27 @@ export class TeamsService {
   }
 
   findAll() {
+    this.logger.debug('findAll');
+
     return this.prismaService.team.findMany({
       orderBy: { id: 'asc' },
     });
   }
 
   findOne(cuid: string) {
+    this.logger.debug('findOne', { cuid });
+
     return this.prismaService.team.findUniqueOrThrow({ where: { cuid } });
   }
 
-  findAllByUser(userId: string) {
+  findAllByUser(cuid: string) {
+    this.logger.debug('findAllByUser', { cuid });
+
     return this.prismaService.team.findMany({
       where: {
         users: {
           some: {
-            cuid: userId,
+            cuid,
           },
         },
       },
@@ -62,7 +68,7 @@ export class TeamsService {
   }
 
   async update(cuid: string, updateTeamInput: UpdateTeamInput) {
-    this.logger.debug('Resolving team update', { updateTeamInput });
+    this.logger.debug('update', { updateTeamInput });
 
     const transactionOperations = [];
 
@@ -103,6 +109,8 @@ export class TeamsService {
   }
 
   remove(cuid: string) {
+    this.logger.debug('remove', { cuid });
+
     return this.prismaService.team.delete({
       where: {
         cuid,

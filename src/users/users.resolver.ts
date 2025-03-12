@@ -33,13 +33,15 @@ export class UsersResolver {
   @Query(() => [User], { name: 'users' })
   @UseGuards(GqlAuthGuard)
   async findAll() {
-    this.logger.debug('Resolving findAll users');
+    this.logger.debug('findAll');
 
     return this.usersService.findAll();
   }
 
   @Query(() => User, { name: 'user' })
   async findOne(@Args('cuid', { type: () => String }) cuid: string) {
+    this.logger.debug('findONe');
+
     try {
       // We need to await here in order to catch any error
       return await this.usersService.findOne(cuid);
@@ -64,7 +66,7 @@ export class UsersResolver {
     @Args({ name: 'createUserData', type: () => CreateUserInput })
     createUserData: CreateUserInput,
   ) {
-    this.logger.debug('Resolving createUser', { createUserData });
+    this.logger.debug('createUser', { createUserData });
 
     const validation = UserCreateSchema.safeParse(createUserData);
 
@@ -84,7 +86,7 @@ export class UsersResolver {
     @Args({ name: 'updateUserData', type: () => UpdateUserInput })
     updateUserData: UpdateUserInput,
   ) {
-    this.logger.debug('Resolving updateUser', { cuid, updateUserData });
+    this.logger.debug('updateUser', { cuid, updateUserData });
 
     const validation = UserUpdateSchema.safeParse(updateUserData);
 
@@ -106,7 +108,7 @@ export class UsersResolver {
 
   @Mutation(() => User)
   async removeUser(@Args({ name: 'cuid', type: () => String }) cuid: string) {
-    this.logger.debug('Resolving removeUser');
+    this.logger.debug('removeUser', { cuid });
 
     let userToDelete = {};
 
