@@ -18,7 +18,7 @@ async function main() {
     saltRounds,
   );
 
-  await prisma.user.upsert({
+  const user = await prisma.user.upsert({
     where: { email: adminCredentials.email },
     update: {},
     create: {
@@ -27,7 +27,29 @@ async function main() {
       password: hashedPassword,
     },
   });
+
+  const defaultTeam = {
+    name: 'default',
+  };
+
+  const [team] = await prisma.team.findMany({
+    where: { name: defaultTeam.name },
+  });
+
+  if (!team) {
+    await prisma.team.create({
+      data: {
+        name: defaultTeam.name,
+        users: {
+          connect: {
+            id: user.id,
+          },
+        },
+      },
+    });
+  }
 }
+
 main()
   .then(async () => {
     await prisma.$disconnect();

@@ -1,36 +1,70 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 
 import * as bcrypt from 'bcrypt';
 
-import { User } from './models/user.model';
+import { User } from './models/user.entity';
 import { UsersService } from './users.service';
-import { UserCreateInput } from './inputs/createUser.input';
-import { UserUpdateInput } from './inputs/updateUser.input';
 import { HttpException, HttpStatus, Logger, UseGuards } from '@nestjs/common';
 
 import { UserCreateSchema, UserUpdateSchema } from 'schemas';
 import { GqlAuthGuard } from '../auth/gql-auth.guard';
+import { Prisma } from '@prisma/client';
+import { GraphQLException } from '@nestjs/graphql/dist/exceptions';
+import { TeamsService } from '../teams/teams.service';
+import { UpdateUserInput } from './inputs/update-user.input';
+import { CreateUserInput } from './inputs/create-user.input';
 
 @Resolver(() => User)
 export class UsersResolver {
   private readonly logger = new Logger(UsersResolver.name);
 
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly teamsService: TeamsService,
+  ) {}
 
-  @Query(() => [User])
+  @Query(() => [User], { name: 'users' })
   @UseGuards(GqlAuthGuard)
-  async Users() {
+  async findAll() {
     this.logger.debug('Resolving findAll users');
 
     return this.usersService.findAll();
   }
 
+  @Query(() => User, { name: 'user' })
+  async findOne(@Args('cuid', { type: () => String }) cuid: string) {
+    try {
+      // We need to await here in order to catch any error
+      return await this.usersService.findOne(cuid);
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new GraphQLException('User not found', {
+            extensions: { http: { status: HttpStatus.NOT_FOUND } },
+          });
+        }
+      }
+    }
+  }
+
+  @ResolveField()
+  async teams(@Parent() user: User) {
+    return this.teamsService.findAllByUser(user.cuid);
+  }
+
   @Mutation(() => User)
   createUser(
-    @Args({ name: 'createUserData', type: () => UserCreateInput })
-    createUserData: UserCreateInput,
+    @Args({ name: 'createUserData', type: () => CreateUserInput })
+    createUserData: CreateUserInput,
   ) {
-    this.logger.debug('Resolving create user');
+    this.logger.debug('Resolving createUser', { createUserData });
 
     const validation = UserCreateSchema.safeParse(createUserData);
 
@@ -47,10 +81,10 @@ export class UsersResolver {
   @Mutation(() => User)
   async updateUser(
     @Args({ name: 'cuid', type: () => String }) cuid: string,
-    @Args({ name: 'updateUserData', type: () => UserUpdateInput })
-    updateUserData: UserUpdateInput,
+    @Args({ name: 'updateUserData', type: () => UpdateUserInput })
+    updateUserData: UpdateUserInput,
   ) {
-    this.logger.debug('Resolving update users');
+    this.logger.debug('Resolving updateUser', { cuid, updateUserData });
 
     const validation = UserUpdateSchema.safeParse(updateUserData);
 
@@ -71,15 +105,22 @@ export class UsersResolver {
   }
 
   @Mutation(() => User)
-  async deleteUser(@Args({ name: 'cuid', type: () => String }) cuid: string) {
-    this.logger.debug('Resolving delete user');
+  async removeUser(@Args({ name: 'cuid', type: () => String }) cuid: string) {
+    this.logger.debug('Resolving removeUser');
 
     let userToDelete = {};
 
     try {
       userToDelete = await this.usersService.findOne(cuid);
     } catch (error) {
-      throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2025'
+      ) {
+        throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
+      }
+
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     await this.usersService.remove(cuid);

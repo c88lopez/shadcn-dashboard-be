@@ -1,7 +1,7 @@
 import { Field, InputType } from '@nestjs/graphql';
 
 @InputType()
-export class UserUpdateInput {
+export class UpdateUserInput {
   @Field({ nullable: true })
   email: string;
 
@@ -10,4 +10,7 @@ export class UserUpdateInput {
 
   @Field({ nullable: true })
   password: string;
+
+  @Field(() => [String], { nullable: true })
+  teams: string[];
 }
