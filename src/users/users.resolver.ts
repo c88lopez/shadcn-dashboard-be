@@ -40,7 +40,7 @@ export class UsersResolver {
 
   @Query(() => User, { name: 'user' })
   async findOne(@Args('cuid', { type: () => String }) cuid: string) {
-    this.logger.debug('findONe');
+    this.logger.debug('findOne');
 
     try {
       // We need to await here in order to catch any error
