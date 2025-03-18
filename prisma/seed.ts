@@ -32,12 +32,12 @@ async function main() {
     name: 'default',
   };
 
-  const [team] = await prisma.team.findMany({
+  const [team] = await prisma.userGroups.findMany({
     where: { name: defaultTeam.name },
   });
 
   if (!team) {
-    await prisma.team.create({
+    await prisma.userGroups.create({
       data: {
         name: defaultTeam.name,
         users: {

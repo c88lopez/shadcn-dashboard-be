@@ -1,20 +1,20 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
-import { CreateTeamInput } from './dto/create-team.input';
-import { UpdateTeamInput } from './dto/update-team.input';
+import { CreateUserGroupInput } from './dto/create-user-group.input';
+import { UpdateUserGroupInput } from './dto/update-user-group.input';
 import { PrismaService } from '../prisma.service';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
-export class TeamsService {
-  private readonly logger = new Logger(TeamsService.name);
+export class UserGroupsService {
+  private readonly logger = new Logger(UserGroupsService.name);
 
   constructor(private prismaService: PrismaService) {}
 
-  async create(createTeamInput: CreateTeamInput) {
+  async create(createTeamInput: CreateUserGroupInput) {
     this.logger.debug('create', { createTeamInput });
 
     try {
-      const createResult = await this.prismaService.team.create({
+      const createResult = await this.prismaService.userGroups.create({
         data: {
           name: createTeamInput.name,
           users: {
@@ -42,7 +42,7 @@ export class TeamsService {
   findAll() {
     this.logger.debug('findAll');
 
-    return this.prismaService.team.findMany({
+    return this.prismaService.userGroups.findMany({
       orderBy: { id: 'asc' },
     });
   }
@@ -50,7 +50,7 @@ export class TeamsService {
   findOne(cuid: string) {
     this.logger.debug('findOne', { cuid });
 
-    return this.prismaService.team.findUniqueOrThrow({ where: { cuid } });
+    return this.prismaService.userGroups.findUniqueOrThrow({ where: { cuid } });
   }
 
   findAllByUser(id: number) {
@@ -61,19 +61,19 @@ export class TeamsService {
         id,
       },
       include: {
-        teams: true,
+        groups: true,
       },
     });
   }
 
-  async update(cuid: string, updateTeamInput: UpdateTeamInput) {
+  async update(cuid: string, updateTeamInput: UpdateUserGroupInput) {
     this.logger.debug('update', { updateTeamInput });
 
     const transactionOperations = [];
 
     if (updateTeamInput.users !== undefined) {
       transactionOperations.push(
-        this.prismaService.team.update({
+        this.prismaService.userGroups.update({
           where: {
             cuid,
           },
@@ -87,7 +87,7 @@ export class TeamsService {
     }
 
     transactionOperations.push(
-      this.prismaService.team.update({
+      this.prismaService.userGroups.update({
         where: {
           cuid,
         },
@@ -110,7 +110,7 @@ export class TeamsService {
   remove(cuid: string) {
     this.logger.debug('remove', { cuid });
 
-    return this.prismaService.team.delete({
+    return this.prismaService.userGroups.delete({
       where: {
         cuid,
       },

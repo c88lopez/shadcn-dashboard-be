@@ -22,7 +22,7 @@ export class UsersService {
           email: createUserInput.email,
           username: createUserInput.username,
           password: hashedPassword,
-          teams: {
+          groups: {
             connect: [
               ...(createUserInput.teams ?? []).map((cuid) => ({ cuid })),
             ],
@@ -63,7 +63,7 @@ export class UsersService {
     return this.prismaService.user.findMany({
       orderBy: { id: 'asc' },
       include: {
-        teams: true,
+        groups: true,
       },
     });
   }
@@ -73,7 +73,7 @@ export class UsersService {
 
     return this.prismaService.user.findMany({
       where: {
-        teams: {
+        groups: {
           some: {
             cuid: teamId,
           },
@@ -114,7 +114,7 @@ export class UsersService {
             cuid,
           },
           data: {
-            teams: {
+            groups: {
               set: [],
             },
           },
@@ -131,7 +131,7 @@ export class UsersService {
           email: updateUserInput.email,
           username: updateUserInput.username,
           password: updateUserInput.password,
-          teams: {
+          groups: {
             connect: [
               ...(updateUserInput.teams ?? []).map((cuid) => ({ cuid })),
             ],

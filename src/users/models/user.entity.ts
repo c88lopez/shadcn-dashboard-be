@@ -1,5 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Team } from '../../teams/entities/team.entity';
+import { UserGroup } from '../../user-groups/entities/user-group.entity';
 
 @ObjectType({ description: 'user' })
 export class User {
@@ -14,8 +14,8 @@ export class User {
   @Field({ description: 'Public user name of the user' })
   username: string;
 
-  @Field(() => [Team], { nullable: true })
-  teams?: Team[];
+  @Field(() => [UserGroup], { nullable: true })
+  groups?: UserGroup[];
 
   password: string;
 }

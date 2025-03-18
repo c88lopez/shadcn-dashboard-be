@@ -22,13 +22,13 @@ model User {
 
   password String
 
-  teams Team[]
+  groups UserGroups[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 }
 
-model Team {
+model UserGroups {
   id   Int    @id @default(autoincrement())
   cuid String @unique @default(cuid())
 

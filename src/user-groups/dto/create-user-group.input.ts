@@ -1,7 +1,7 @@
 import { Field, InputType } from '@nestjs/graphql';
 
 @InputType()
-export class CreateTeamInput {
+export class CreateUserGroupInput {
   @Field(() => String, { description: 'Name of the new team' })
   name: string;
 

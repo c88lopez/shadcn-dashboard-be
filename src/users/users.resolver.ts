@@ -17,7 +17,6 @@ import { UserCreateSchema, UserUpdateSchema } from 'schemas';
 import { GqlAuthGuard } from '../auth/gql-auth.guard';
 import { Prisma } from '@prisma/client';
 import { GraphQLException } from '@nestjs/graphql/dist/exceptions';
-import { TeamsService } from '../teams/teams.service';
 import { UpdateUserInput } from './inputs/update-user.input';
 import { CreateUserInput } from './inputs/create-user.input';
 
@@ -25,10 +24,7 @@ import { CreateUserInput } from './inputs/create-user.input';
 export class UsersResolver {
   private readonly logger = new Logger(UsersResolver.name);
 
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly teamsService: TeamsService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Query(() => [User], { name: 'users' })
   @UseGuards(GqlAuthGuard)
@@ -57,8 +53,8 @@ export class UsersResolver {
   }
 
   @ResolveField()
-  async teams(@Parent() user: User) {
-    return user.teams;
+  async groups(@Parent() user: User) {
+    return user.groups;
   }
 
   @Mutation(() => User)
