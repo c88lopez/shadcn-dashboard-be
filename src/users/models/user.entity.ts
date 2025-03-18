@@ -3,6 +3,8 @@ import { Team } from '../../teams/entities/team.entity';
 
 @ObjectType({ description: 'user' })
 export class User {
+  id: number;
+
   @Field({ description: 'Unique identifier of the user' })
   cuid: string;
 

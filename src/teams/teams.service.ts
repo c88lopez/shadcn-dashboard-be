@@ -53,16 +53,15 @@ export class TeamsService {
     return this.prismaService.team.findUniqueOrThrow({ where: { cuid } });
   }
 
-  findAllByUser(cuid: string) {
-    this.logger.debug('findAllByUser', { cuid });
+  findAllByUser(id: number) {
+    this.logger.debug('findAllByUser', { id });
 
-    return this.prismaService.team.findMany({
+    return this.prismaService.user.findUniqueOrThrow({
       where: {
-        users: {
-          some: {
-            cuid,
-          },
-        },
+        id,
+      },
+      include: {
+        teams: true,
       },
     });
   }

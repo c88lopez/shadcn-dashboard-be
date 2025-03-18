@@ -58,7 +58,7 @@ export class UsersResolver {
 
   @ResolveField()
   async teams(@Parent() user: User) {
-    return this.teamsService.findAllByUser(user.cuid);
+    return user.teams;
   }
 
   @Mutation(() => User)
