@@ -12,8 +12,8 @@ export class CreateUserInput {
   password: string;
 
   @Field(() => [String], {
-    description: 'List of teams to assign',
+    description: 'List of groups to assign',
     nullable: true,
   })
-  teams?: string[];
+  groups?: string[];
 }

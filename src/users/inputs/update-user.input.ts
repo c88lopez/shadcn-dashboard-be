@@ -12,5 +12,5 @@ export class UpdateUserInput {
   password: string;
 
   @Field(() => [String], { nullable: true })
-  teams: string[];
+  groups: string[];
 }

@@ -24,7 +24,7 @@ export class UsersService {
           password: hashedPassword,
           groups: {
             connect: [
-              ...(createUserInput.teams ?? []).map((cuid) => ({ cuid })),
+              ...(createUserInput.groups ?? []).map((cuid) => ({ cuid })),
             ],
           },
         },
@@ -107,7 +107,7 @@ export class UsersService {
 
     const transactionOperations = [];
 
-    if (updateUserInput.teams !== undefined) {
+    if (updateUserInput.groups !== undefined) {
       transactionOperations.push(
         this.prismaService.user.update({
           where: {
@@ -133,7 +133,7 @@ export class UsersService {
           password: updateUserInput.password,
           groups: {
             connect: [
-              ...(updateUserInput.teams ?? []).map((cuid) => ({ cuid })),
+              ...(updateUserInput.groups ?? []).map((cuid) => ({ cuid })),
             ],
           },
         },
