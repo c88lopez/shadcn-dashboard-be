@@ -31,7 +31,7 @@ export class UserGroupsResolver {
     return this.teamsService.findAll();
   }
 
-  @Query(() => UserGroup, { name: 'userGroups' })
+  @Query(() => UserGroup, { name: 'userGroup' })
   async findOne(@Args('cuid', { type: () => String }) cuid: string) {
     this.logger.debug('findOne', { cuid });
 
