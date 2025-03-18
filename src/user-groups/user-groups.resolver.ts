@@ -56,23 +56,22 @@ export class UserGroupsResolver {
 
   @Mutation(() => UserGroup)
   createUserGroup(
-    @Args('createUserGroupInput') createUserGroupInput: CreateUserGroupInput,
+    @Args('createUserGroupData') createUserGroupData: CreateUserGroupInput,
   ) {
-    this.logger.debug('createUserGroup', { createUserGroupInput });
+    this.logger.debug('createUserGroup', { createUserGroupData });
 
-    return this.teamsService.create(createUserGroupInput);
+    return this.teamsService.create(createUserGroupData);
   }
 
   @Mutation(() => UserGroup)
   updateUserGroup(
-    @Args('updateUserGroupInput') updateUserGroupInput: UpdateUserGroupInput,
+    @Args({ name: 'cuid', type: () => String }) cuid: UserGroup['cuid'],
+    @Args({ name: 'updateUserGroupData', type: () => UpdateUserGroupInput })
+    updateUserGroupData: UpdateUserGroupInput,
   ) {
-    this.logger.debug('updateUserGroup', { updateUserGroupInput });
+    this.logger.debug('updateUserGroup', { updateUserGroupData });
 
-    return this.teamsService.update(
-      updateUserGroupInput.cuid,
-      updateUserGroupInput,
-    );
+    return this.teamsService.update(cuid, updateUserGroupData);
   }
 
   @Mutation(() => UserGroup)
