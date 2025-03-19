@@ -43,8 +43,13 @@ type Mutation {
 }
 
 input CreateUserInput {
+  """User's email"""
   email: String
+
+  """User's username"""
   username: String
+
+  """User's password"""
   password: String
 
   """List of groups to assign"""
@@ -52,9 +57,16 @@ input CreateUserInput {
 }
 
 input UpdateUserInput {
+  """User's email"""
   email: String
+
+  """User's username"""
   username: String
+
+  """User's password"""
   password: String
+
+  """List of groups to assign"""
   groups: [String!]
 }
 
