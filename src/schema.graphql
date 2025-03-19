@@ -1,0 +1,75 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type UserGroup {
+  """ID of the group"""
+  cuid: String!
+
+  """Name of the group"""
+  name: String!
+
+  """List of users in the group"""
+  users: [User!]
+}
+
+"""user"""
+type User {
+  """Unique identifier of the user"""
+  cuid: String!
+
+  """User's email"""
+  email: String!
+
+  """Public user name of the user"""
+  username: String!
+  groups: [UserGroup!]
+}
+
+type Query {
+  users: [User!]!
+  user(cuid: String!): User!
+  userGroups: [UserGroup!]!
+  userGroup(cuid: String!): UserGroup!
+}
+
+type Mutation {
+  createUser(createUserData: CreateUserInput!): User!
+  updateUser(cuid: String!, updateUserData: UpdateUserInput!): User!
+  removeUser(cuid: String!): User!
+  createUserGroup(createUserGroupData: CreateUserGroupInput!): UserGroup!
+  updateUserGroup(cuid: String!, updateUserGroupData: UpdateUserGroupInput!): UserGroup!
+  removeUserGroup(cuid: String!): UserGroup!
+}
+
+input CreateUserInput {
+  email: String
+  username: String
+  password: String
+
+  """List of groups to assign"""
+  groups: [String!]
+}
+
+input UpdateUserInput {
+  email: String
+  username: String
+  password: String
+  groups: [String!]
+}
+
+input CreateUserGroupInput {
+  """Name of the new team"""
+  name: String!
+
+  """List of users to assign"""
+  users: [String!]
+}
+
+input UpdateUserGroupInput {
+  """Name of the new team"""
+  name: String
+
+  """List of users to assign"""
+  users: [String!]
+}
