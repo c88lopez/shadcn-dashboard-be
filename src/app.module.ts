@@ -22,7 +22,7 @@ import { UserGroupsModule } from './user-groups/user-groups.module';
     UsersModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: 'src/schema.gql',
+      autoSchemaFile: 'src/schema.graphql',
       formatError: (error: GraphQLFormattedError): GraphQLFormattedError => ({
         message: error.message,
       }),
