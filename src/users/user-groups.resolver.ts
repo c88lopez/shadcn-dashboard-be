@@ -7,13 +7,13 @@ import {
   Resolver,
 } from '@nestjs/graphql';
 import { UserGroupsService } from './user-groups.service';
-import { CreateUserGroupInput } from './dto/create-user-group.input';
+import { CreateUserGroupInput } from './inputs/create-user-group.input';
 import { Prisma } from '@prisma/client';
 import { GraphQLException } from '@nestjs/graphql/dist/exceptions';
 import { HttpStatus, Logger } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
+import { UsersService } from './users.service';
 import { UserGroup } from './entities/user-group.entity';
-import { UpdateUserGroupInput } from './dto/update-user-group.input';
+import { UpdateUserGroupInput } from './inputs/update-user-group.input';
 
 @Resolver(() => UserGroup)
 export class UserGroupsResolver {

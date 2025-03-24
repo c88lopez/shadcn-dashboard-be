@@ -1,6 +1,6 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
-import { CreateUserGroupInput } from './dto/create-user-group.input';
-import { UpdateUserGroupInput } from './dto/update-user-group.input';
+import { CreateUserGroupInput } from './inputs/create-user-group.input';
+import { UpdateUserGroupInput } from './inputs/update-user-group.input';
 import { PrismaService } from '../prisma.service';
 import { Prisma } from '@prisma/client';
 

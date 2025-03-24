@@ -1,5 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { UserGroup } from '../../user-groups/entities/user-group.entity';
+import { UserGroup } from './user-group.entity';
 
 @ObjectType({ description: 'user' })
 export class User {

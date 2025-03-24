@@ -11,7 +11,6 @@ import { GraphQLFormattedError } from 'graphql/error';
 import { APP_FILTER } from '@nestjs/core';
 import { GraphqlExceptionFilter } from './graphql-exception.filter';
 import { AuthModule } from './auth/auth.module';
-import { UserGroupsModule } from './user-groups/user-groups.module';
 
 @Module({
   imports: [
@@ -28,7 +27,6 @@ import { UserGroupsModule } from './user-groups/user-groups.module';
       }),
     }),
     AuthModule,
-    UserGroupsModule,
   ],
   controllers: [AppController],
   providers: [

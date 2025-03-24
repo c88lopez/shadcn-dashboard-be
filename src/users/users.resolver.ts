@@ -9,7 +9,7 @@ import {
 
 import * as bcrypt from 'bcrypt';
 
-import { User } from './models/user.entity';
+import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { HttpException, HttpStatus, Logger, UseGuards } from '@nestjs/common';
 
