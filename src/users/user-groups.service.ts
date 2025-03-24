@@ -14,13 +14,17 @@ export class UserGroupsService {
     this.logger.debug('create', { createTeamInput });
 
     try {
-      const createResult = await this.prismaService.userGroups.create({
+      const createResult = await this.prismaService.userGroup.create({
         data: {
           name: createTeamInput.name,
           users: {
-            connect: [
-              ...(createTeamInput.users ?? []).map((cuid) => ({ cuid })),
-            ],
+            create: (createTeamInput.users ?? []).map((cuid) => ({
+              user: {
+                connect: {
+                  cuid,
+                },
+              },
+            })),
           },
         },
       });
@@ -42,7 +46,7 @@ export class UserGroupsService {
   findAll() {
     this.logger.debug('findAll');
 
-    return this.prismaService.userGroups.findMany({
+    return this.prismaService.userGroup.findMany({
       orderBy: { id: 'asc' },
     });
   }
@@ -50,7 +54,7 @@ export class UserGroupsService {
   findOne(cuid: string) {
     this.logger.debug('findOne', { cuid });
 
-    return this.prismaService.userGroups.findUniqueOrThrow({ where: { cuid } });
+    return this.prismaService.userGroup.findUniqueOrThrow({ where: { cuid } });
   }
 
   findAllByUser(id: number) {
@@ -73,7 +77,7 @@ export class UserGroupsService {
 
     if (updateTeamInput.users !== undefined) {
       transactionOperations.push(
-        this.prismaService.userGroups.update({
+        this.prismaService.userGroup.update({
           where: {
             cuid,
           },
@@ -87,16 +91,20 @@ export class UserGroupsService {
     }
 
     transactionOperations.push(
-      this.prismaService.userGroups.update({
+      this.prismaService.userGroup.update({
         where: {
           cuid,
         },
         data: {
           name: updateTeamInput.name,
           users: {
-            connect: [
-              ...(updateTeamInput.users ?? []).map((cuid) => ({ cuid })),
-            ],
+            create: (updateTeamInput.users ?? []).map((cuid) => ({
+              user: {
+                connect: {
+                  cuid,
+                },
+              },
+            })),
           },
         },
       }),
@@ -110,7 +118,7 @@ export class UserGroupsService {
   remove(cuid: string) {
     this.logger.debug('remove', { cuid });
 
-    return this.prismaService.userGroups.delete({
+    return this.prismaService.userGroup.delete({
       where: {
         cuid,
       },

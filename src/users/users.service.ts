@@ -23,9 +23,13 @@ export class UsersService {
           username: createUserInput.username,
           password: hashedPassword,
           groups: {
-            connect: [
-              ...(createUserInput.groups ?? []).map((cuid) => ({ cuid })),
-            ],
+            create: (createUserInput.groups ?? []).map((cuid) => ({
+              userGroup: {
+                connect: {
+                  cuid,
+                },
+              },
+            })),
           },
         },
       });
@@ -75,7 +79,9 @@ export class UsersService {
       where: {
         groups: {
           some: {
-            cuid: teamId,
+            userGroup: {
+              cuid: teamId,
+            },
           },
         },
       },
@@ -132,9 +138,13 @@ export class UsersService {
           username: updateUserInput.username,
           password: updateUserInput.password,
           groups: {
-            connect: [
-              ...(updateUserInput.groups ?? []).map((cuid) => ({ cuid })),
-            ],
+            create: (updateUserInput.groups ?? []).map((cuid) => ({
+              userGroup: {
+                connect: {
+                  cuid,
+                },
+              },
+            })),
           },
         },
       }),

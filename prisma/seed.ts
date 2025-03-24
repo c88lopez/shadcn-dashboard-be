@@ -41,9 +41,15 @@ async function main() {
       data: {
         name: defaultGroupName.name,
         users: {
-          connect: {
-            id: user.id,
-          },
+          create: [
+            {
+              user: {
+                connect: {
+                  id: user.id,
+                },
+              },
+            },
+          ],
         },
       },
     });
