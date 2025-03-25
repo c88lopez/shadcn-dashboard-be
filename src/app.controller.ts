@@ -1,16 +1,25 @@
 import {
   Controller,
   Get,
-  Post,
-  UseGuards,
-  Request,
   HttpCode,
   HttpStatus,
+  Post,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import { AuthService } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { Request } from 'express';
+import { User } from './users/entities/user.entity';
+
+declare module 'Express' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface Request {
+    user?: User;
+  }
+}
 
 @Controller()
 export class AppController {
@@ -19,13 +28,13 @@ export class AppController {
   @UseGuards(AuthGuard('local'))
   @Post('auth/login')
   @HttpCode(HttpStatus.OK)
-  async login(@Request() request) {
+  async login(@Req() request: Request) {
     return this.authService.login(request.user);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Request() request) {
+  getProfile(@Req() request: Request) {
     return request.user;
   }
 }
