@@ -70,12 +70,33 @@ describe('User e2e', () => {
             .set('Authorization', `Bearer ${response.body.access_token}`)
             .send({
               query:
-                'mutation CreateUser ($createUserData: CreateUserInput!) { createUser(createUserData: $createUserData) { cuid email username }}',
+                'mutation CreateUser($createUserData: CreateUserInput!) { createUser(createUserData: $createUserData) { cuid email username }}',
               variables: {
                 createUserData: {
                   username: 'new user username',
                   email: 'dummy@vandelay.com',
                   password: '234234234',
+                },
+              },
+            }),
+        );
+
+        graphqlResponses.set(
+          'updateUser',
+          await request(app.getHttpServer())
+            .post('/graphql')
+            .set('content-type', 'application/json')
+            .set('Authorization', `Bearer ${response.body.access_token}`)
+            .send({
+              query:
+                'mutation UpdateUser($cuid: String!, $updateUserData: UpdateUserInput!) { updateUser(cuid: $cuid, updateUserData: $updateUserData) { username }}',
+              variables: {
+                cuid: graphqlResponses.get('createUser').body.data.createUser
+                  .cuid,
+                updateUserData: {
+                  username:
+                    graphqlResponses.get('createUser').body.data.createUser
+                      .username + ' 2',
                 },
               },
             }),
@@ -89,7 +110,7 @@ describe('User e2e', () => {
             .set('Authorization', `Bearer ${response.body.access_token}`)
             .send({
               query:
-                'mutation RemoveUser ($cuid: String!) { removeUser(cuid: $cuid) { cuid }}',
+                'mutation RemoveUser($cuid: String!) { removeUser(cuid: $cuid) { cuid }}',
               variables: {
                 cuid: graphqlResponses.get('createUser').body.data.createUser
                   .cuid,
@@ -114,6 +135,16 @@ describe('User e2e', () => {
         expect(
           graphqlResponses.get('createUser').body.data.createUser,
         ).toHaveProperty('email', 'dummy@vandelay.com');
+      });
+
+      it('should update user', async () => {
+        expect(
+          graphqlResponses.get('updateUser').body.data.updateUser,
+        ).toHaveProperty(
+          'username',
+          graphqlResponses.get('createUser').body.data.createUser.username +
+            ' 2',
+        );
       });
 
       it('should remove user', async () => {
