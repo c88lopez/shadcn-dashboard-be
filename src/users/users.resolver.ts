@@ -1,5 +1,6 @@
 import {
   Args,
+  Context,
   Mutation,
   Parent,
   Query,
@@ -28,8 +29,9 @@ export class UsersResolver {
 
   @Query(() => [User], { name: 'users' })
   @UseGuards(GqlAuthGuard)
-  async findAll() {
-    this.logger.debug('findAll');
+  async findAll(@Context() context: any) {
+    // Example on how to get the user payload from the jwt in a request.
+    this.logger.debug('findAll', context.req.user);
 
     return this.usersService.findAll();
   }
