@@ -56,3 +56,73 @@ model UserUserGroup {
   @@id([userId, userGroupId])
   @@map("users_user_groups")
 }
+
+model Player {
+  id   Int    @id @default(autoincrement())
+  cuid String @unique @default(cuid())
+
+  firstName String @map("first_name")
+  lastName  String @map("last_name")
+
+  dateOfBirth DateTime? @map("date_of_birth")
+
+  phoneNumber String? @unique @map("phone_number")
+  email       String? @unique
+  instagram   String? @unique
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  teams PlayerTeam[]
+
+  @@map("players")
+}
+
+model Team {
+  id Int @id @default(autoincrement())
+
+  players PlayerTeam[]
+  matches TeamMatch[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("teams")
+}
+
+model PlayerTeam {
+  player   Player @relation(fields: [playerId], references: [id])
+  playerId Int    @map("player_id")
+
+  team   Team @relation(fields: [teamId], references: [id])
+  teamId Int  @map("team_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@id([playerId, teamId])
+  @@map("players_teams")
+}
+
+model Match {
+  id Int @id @default(autoincrement())
+
+  teams  TeamMatch[]
+  points Int[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("matches")
+}
+
+model TeamMatch {
+  team   Team @relation(fields: [teamId], references: [id])
+  teamId Int
+
+  match   Match @relation(fields: [matchId], references: [id])
+  matchId Int
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@id([teamId, matchId])
+  @@map("teams_matches")
+}
