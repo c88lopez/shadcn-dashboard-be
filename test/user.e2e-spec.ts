@@ -27,7 +27,7 @@ describe('User e2e', () => {
 
     let response: request.Response;
 
-    const graphqlResponses: request.Response[] = [];
+    const graphqlResponses = new Map<string, request.Response>();
 
     beforeAll(async () => {
       response = await request(app.getHttpServer())
@@ -37,7 +37,8 @@ describe('User e2e', () => {
 
     describe('CRUD operations', () => {
       beforeAll(async () => {
-        graphqlResponses.push(
+        graphqlResponses.set(
+          'getAllUsers',
           await request(app.getHttpServer())
             .post('/graphql')
             .set('content-type', 'application/json')
@@ -45,9 +46,11 @@ describe('User e2e', () => {
             .send({ query: '{users { cuid email username }}' }),
         );
 
-        const adminCuid = graphqlResponses[0].body.data.users[0].cuid;
+        const adminCuid =
+          graphqlResponses.get('getAllUsers').body.data.users[0].cuid;
 
-        graphqlResponses.push(
+        graphqlResponses.set(
+          'getAdminUser',
           await request(app.getHttpServer())
             .post('/graphql')
             .set('content-type', 'application/json')
@@ -62,15 +65,14 @@ describe('User e2e', () => {
 
       it('should get list of users', async () => {
         expect(
-          graphqlResponses[0].body.data.users.length,
+          graphqlResponses.get('getAllUsers').body.data.users.length,
         ).toBeGreaterThanOrEqual(1);
       });
 
       it('should get user', async () => {
-        expect(graphqlResponses[1].body.data.user).toHaveProperty(
-          'email',
-          credentials.email,
-        );
+        expect(
+          graphqlResponses.get('getAdminUser').body.data.user,
+        ).toHaveProperty('email', credentials.email);
       });
     });
   });
