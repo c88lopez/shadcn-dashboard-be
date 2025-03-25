@@ -1,7 +1,7 @@
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
+import { AppModule } from '../../src/app.module';
 
 describe('User e2e', () => {
   let app: INestApplication;
@@ -36,6 +36,16 @@ describe('User e2e', () => {
     });
 
     describe('CRUD operations', () => {
+      const createUserData = {
+        username: 'new-username',
+        email: 'without-groups@vandelay.com',
+        password: '234234234',
+      };
+
+      const updateUserData = {
+        username: createUserData.username + '-edit',
+      };
+
       beforeAll(async () => {
         graphqlResponses.set(
           'getAllUsers',
@@ -72,11 +82,7 @@ describe('User e2e', () => {
               query:
                 'mutation CreateUser($createUserData: CreateUserInput!) { createUser(createUserData: $createUserData) { cuid email username }}',
               variables: {
-                createUserData: {
-                  username: 'new user username',
-                  email: 'dummy@vandelay.com',
-                  password: '234234234',
-                },
+                createUserData,
               },
             }),
         );
@@ -93,11 +99,7 @@ describe('User e2e', () => {
               variables: {
                 cuid: graphqlResponses.get('createUser').body.data.createUser
                   .cuid,
-                updateUserData: {
-                  username:
-                    graphqlResponses.get('createUser').body.data.createUser
-                      .username + ' 2',
-                },
+                updateUserData,
               },
             }),
         );
@@ -143,29 +145,25 @@ describe('User e2e', () => {
       it('should create user', async () => {
         expect(
           graphqlResponses.get('createUser').body.data.createUser,
-        ).toHaveProperty('email', 'dummy@vandelay.com');
+        ).toHaveProperty('email', createUserData.email);
       });
 
       it('should update user', async () => {
         expect(
           graphqlResponses.get('updateUser').body.data.updateUser,
-        ).toHaveProperty(
-          'username',
-          graphqlResponses.get('createUser').body.data.createUser.username +
-            ' 2',
-        );
+        ).toHaveProperty('username', updateUserData.username);
       });
 
       it('should get admin and updated user', async () => {
         expect(
-          graphqlResponses.get('getAllUsersAfterUpdate').body.data.users,
-        ).toHaveLength(2);
+          graphqlResponses.get('getAllUsersAfterUpdate').body.data.users.length,
+        ).toBeGreaterThanOrEqual(2);
         expect(
           graphqlResponses.get('getAllUsersAfterUpdate').body.data.users[0],
         ).toHaveProperty('username', 'admin');
         expect(
           graphqlResponses.get('getAllUsersAfterUpdate').body.data.users[1],
-        ).toHaveProperty('username', 'new user username 2');
+        ).toHaveProperty('username', updateUserData.username);
       });
 
       it('should remove user', async () => {

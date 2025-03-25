@@ -2,7 +2,7 @@ import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { z } from 'zod';
-import { AppModule } from '../src/app.module';
+import { AppModule } from '../../src/app.module';
 
 describe('Auth e2e', () => {
   let app: INestApplication;
