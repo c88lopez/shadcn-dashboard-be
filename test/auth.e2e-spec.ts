@@ -1,0 +1,79 @@
+import * as request from 'supertest';
+import { AuthModule } from '../src/auth/auth.module';
+import { INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { z } from 'zod';
+
+describe('Auth e2e', () => {
+  let app: INestApplication;
+
+  beforeEach(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AuthModule],
+    }).compile();
+    app = moduleFixture.createNestApplication();
+    await app.init();
+  });
+
+  afterEach(async () => {
+    await app.close();
+  });
+
+  describe('POST /auth/login', () => {
+    const credentials = {
+      email: 'admin@vandelay-labs.com',
+      password: '123123123',
+    };
+
+    let response: request.Response;
+
+    beforeEach(() => {
+      return request(app.getHttpServer())
+        .post('/auth/login')
+        .send(credentials)
+        .then((r) => {
+          response = r;
+        });
+    });
+
+    it('body should have access_token field', () => {
+      expect(response.body).toHaveProperty('access_token');
+    });
+
+    it('jwt should have 3 parts', () => {
+      expect(response.body.access_token.split('.')).toHaveLength(3);
+    });
+
+    it('jwt payload should contain email', () => {
+      const payload = Buffer.from(
+        response.body.access_token.split('.')[1],
+        'base64',
+      ).toString();
+
+      expect(JSON.parse(payload)).toHaveProperty('email', credentials.email);
+    });
+
+    it('jwt payload should contain sub', () => {
+      const payload = Buffer.from(
+        response.body.access_token.split('.')[1],
+        'base64',
+      ).toString();
+
+      expect(JSON.parse(payload)).toHaveProperty('sub');
+    });
+
+    it('jwt payload sub should be cuid', () => {
+      const cuid = z.string().cuid();
+
+      const payload = Buffer.from(
+        response.body.access_token.split('.')[1],
+        'base64',
+      ).toString();
+
+      expect(cuid.safeParse(JSON.parse(payload).sub)).toHaveProperty(
+        'success',
+        true,
+      );
+    });
+  });
+});
