@@ -103,6 +103,15 @@ describe('User e2e', () => {
         );
 
         graphqlResponses.set(
+          'getAllUsersAfterUpdate',
+          await request(app.getHttpServer())
+            .post('/graphql')
+            .set('content-type', 'application/json')
+            .set('Authorization', `Bearer ${response.body.access_token}`)
+            .send({ query: '{users { cuid email username }}' }),
+        );
+
+        graphqlResponses.set(
           'removeUser',
           await request(app.getHttpServer())
             .post('/graphql')
@@ -145,6 +154,18 @@ describe('User e2e', () => {
           graphqlResponses.get('createUser').body.data.createUser.username +
             ' 2',
         );
+      });
+
+      it('should get admin and updated user', async () => {
+        expect(
+          graphqlResponses.get('getAllUsersAfterUpdate').body.data.users,
+        ).toHaveLength(2);
+        expect(
+          graphqlResponses.get('getAllUsersAfterUpdate').body.data.users[0],
+        ).toHaveProperty('username', 'admin');
+        expect(
+          graphqlResponses.get('getAllUsersAfterUpdate').body.data.users[1],
+        ).toHaveProperty('username', 'new user username 2');
       });
 
       it('should remove user', async () => {
