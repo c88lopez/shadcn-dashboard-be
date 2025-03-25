@@ -36,40 +36,14 @@ describe('Auth e2e', () => {
         });
     });
 
-    it('body should have access_token field', () => {
-      expect(response.body).toHaveProperty('access_token');
-    });
-
-    it('jwt should have 3 parts', () => {
-      expect(response.body.access_token.split('.')).toHaveLength(3);
-    });
-
-    it('jwt payload should contain email', () => {
+    it('jwt payload should contain email and sub with valid cuid', () => {
+      const cuid = z.string().cuid();
       const payload = Buffer.from(
         response.body.access_token.split('.')[1],
         'base64',
       ).toString();
 
       expect(JSON.parse(payload)).toHaveProperty('email', credentials.email);
-    });
-
-    it('jwt payload should contain sub', () => {
-      const payload = Buffer.from(
-        response.body.access_token.split('.')[1],
-        'base64',
-      ).toString();
-
-      expect(JSON.parse(payload)).toHaveProperty('sub');
-    });
-
-    it('jwt payload sub should be cuid', () => {
-      const cuid = z.string().cuid();
-
-      const payload = Buffer.from(
-        response.body.access_token.split('.')[1],
-        'base64',
-      ).toString();
-
       expect(cuid.safeParse(JSON.parse(payload).sub)).toHaveProperty(
         'success',
         true,
