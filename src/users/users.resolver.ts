@@ -20,12 +20,16 @@ import { Prisma } from '@prisma/client';
 import { GraphQLException } from '@nestjs/graphql/dist/exceptions';
 import { UpdateUserInput } from './inputs/update-user.input';
 import { CreateUserInput } from './inputs/create-user.input';
+import { UserGroupsService } from './user-groups.service';
 
 @Resolver(() => User)
 export class UsersResolver {
   private readonly logger = new Logger(UsersResolver.name);
 
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly userGroupsService: UserGroupsService,
+  ) {}
 
   @Query(() => [User], { name: 'users' })
   @UseGuards(GqlAuthGuard)
@@ -56,7 +60,7 @@ export class UsersResolver {
 
   @ResolveField()
   async groups(@Parent() user: User) {
-    return user.groups;
+    return this.userGroupsService.findAllByUser(user.id);
   }
 
   @Mutation(() => User)

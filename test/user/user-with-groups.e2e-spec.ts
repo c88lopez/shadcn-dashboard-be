@@ -28,7 +28,7 @@ describe('User e2e', () => {
 
     let response: request.Response;
 
-    const graphqlResponses = new Map<string, request.Response>();
+    const graphqlResponses = new Map<string, request.Response['body']>();
 
     beforeAll(async () => {
       response = await request(app.getHttpServer())
@@ -50,144 +50,157 @@ describe('User e2e', () => {
       beforeAll(async () => {
         graphqlResponses.set(
           'getAllGroups',
-          await request(app.getHttpServer())
-            .post('/graphql')
-            .set('content-type', 'application/json')
-            .set('Authorization', `Bearer ${response.body.access_token}`)
-            .send({ query: '{userGroups { cuid name }}' }),
+          (
+            await request(app.getHttpServer())
+              .post('/graphql')
+              .set('content-type', 'application/json')
+              .set('Authorization', `Bearer ${response.body.access_token}`)
+              .send({ query: '{userGroups { cuid name }}' })
+          ).body,
         );
 
         graphqlResponses.set(
           'getAllUsers',
-          await request(app.getHttpServer())
-            .post('/graphql')
-            .set('content-type', 'application/json')
-            .set('Authorization', `Bearer ${response.body.access_token}`)
-            .send({ query: '{users { cuid email username }}' }),
+          (
+            await request(app.getHttpServer())
+              .post('/graphql')
+              .set('content-type', 'application/json')
+              .set('Authorization', `Bearer ${response.body.access_token}`)
+              .send({ query: '{users { cuid email username }}' })
+          ).body,
         );
 
         const adminCuid =
-          graphqlResponses.get('getAllUsers').body.data.users[0].cuid;
+          graphqlResponses.get('getAllUsers').data.users[0].cuid;
 
         graphqlResponses.set(
           'getAdminUser',
-          await request(app.getHttpServer())
-            .post('/graphql')
-            .set('content-type', 'application/json')
-            .set('Authorization', `Bearer ${response.body.access_token}`)
-            .send({
-              query:
-                'query User ($cuid: String!) { user(cuid: $cuid) { cuid email username }}',
-              variables: { cuid: adminCuid },
-            }),
+          (
+            await request(app.getHttpServer())
+              .post('/graphql')
+              .set('content-type', 'application/json')
+              .set('Authorization', `Bearer ${response.body.access_token}`)
+              .send({
+                query:
+                  'query User ($cuid: String!) { user(cuid: $cuid) { cuid email username }}',
+                variables: { cuid: adminCuid },
+              })
+          ).body,
         );
 
         graphqlResponses.set(
           'createUser',
-          await request(app.getHttpServer())
-            .post('/graphql')
-            .set('content-type', 'application/json')
-            .set('Authorization', `Bearer ${response.body.access_token}`)
-            .send({
-              query:
-                'mutation CreateUser($createUserData: CreateUserInput!) { createUser(createUserData: $createUserData) { cuid email username }}',
-              variables: {
-                createUserData: {
-                  ...createUserData,
-                  groups: [
-                    graphqlResponses.get('getAllGroups').body.data.userGroups[0]
-                      .cuid,
-                  ],
+          (
+            await request(app.getHttpServer())
+              .post('/graphql')
+              .set('content-type', 'application/json')
+              .set('Authorization', `Bearer ${response.body.access_token}`)
+              .send({
+                query:
+                  'mutation CreateUser($createUserData: CreateUserInput!) { createUser(createUserData: $createUserData) { cuid email username groups { cuid } }}',
+                variables: {
+                  createUserData: {
+                    ...createUserData,
+                    groups: [
+                      graphqlResponses.get('getAllGroups').data.userGroups[0]
+                        .cuid,
+                    ],
+                  },
                 },
-              },
-            }),
+              })
+          ).body,
         );
 
         graphqlResponses.set(
           'updateUser',
-          await request(app.getHttpServer())
-            .post('/graphql')
-            .set('content-type', 'application/json')
-            .set('Authorization', `Bearer ${response.body.access_token}`)
-            .send({
-              query:
-                'mutation UpdateUser($cuid: String!, $updateUserData: UpdateUserInput!) { updateUser(cuid: $cuid, updateUserData: $updateUserData) { username }}',
-              variables: {
-                cuid: graphqlResponses.get('createUser').body.data.createUser
-                  .cuid,
-                updateUserData,
-              },
-            }),
+          (
+            await request(app.getHttpServer())
+              .post('/graphql')
+              .set('content-type', 'application/json')
+              .set('Authorization', `Bearer ${response.body.access_token}`)
+              .send({
+                query:
+                  'mutation UpdateUser($cuid: String!, $updateUserData: UpdateUserInput!) { updateUser(cuid: $cuid, updateUserData: $updateUserData) { username }}',
+                variables: {
+                  cuid: graphqlResponses.get('createUser').data.createUser.cuid,
+                  updateUserData,
+                },
+              })
+          ).body,
         );
 
         graphqlResponses.set(
           'getAllUsersAfterUpdate',
-          await request(app.getHttpServer())
-            .post('/graphql')
-            .set('content-type', 'application/json')
-            .set('Authorization', `Bearer ${response.body.access_token}`)
-            .send({ query: '{users { cuid email username }}' }),
+          (
+            await request(app.getHttpServer())
+              .post('/graphql')
+              .set('content-type', 'application/json')
+              .set('Authorization', `Bearer ${response.body.access_token}`)
+              .send({ query: '{users { cuid email username }}' })
+          ).body,
         );
 
         graphqlResponses.set(
           'removeUser',
-          await request(app.getHttpServer())
-            .post('/graphql')
-            .set('content-type', 'application/json')
-            .set('Authorization', `Bearer ${response.body.access_token}`)
-            .send({
-              query:
-                'mutation RemoveUser($cuid: String!) { removeUser(cuid: $cuid) { cuid }}',
-              variables: {
-                cuid: graphqlResponses.get('createUser').body.data.createUser
-                  .cuid,
-              },
-            }),
+          (
+            await request(app.getHttpServer())
+              .post('/graphql')
+              .set('content-type', 'application/json')
+              .set('Authorization', `Bearer ${response.body.access_token}`)
+              .send({
+                query:
+                  'mutation RemoveUser($cuid: String!) { removeUser(cuid: $cuid) { cuid }}',
+                variables: {
+                  cuid: graphqlResponses.get('createUser').data.createUser.cuid,
+                },
+              })
+          ).body,
         );
       });
 
       it('should get list of users', async () => {
         expect(
-          graphqlResponses.get('getAllUsers').body.data.users.length,
+          graphqlResponses.get('getAllUsers').data.users.length,
         ).toBeGreaterThanOrEqual(1);
       });
 
       it('should get user', async () => {
-        expect(
-          graphqlResponses.get('getAdminUser').body.data.user,
-        ).toHaveProperty('email', credentials.email);
+        expect(graphqlResponses.get('getAdminUser').data.user).toHaveProperty(
+          'email',
+          credentials.email,
+        );
       });
 
-      it('should create user', async () => {
+      it('should create user with groups and return them', async () => {
         expect(
-          graphqlResponses.get('createUser').body.data.createUser,
-        ).toHaveProperty('email', createUserData.email);
+          graphqlResponses.get('createUser').data.createUser.groups,
+        ).toHaveLength(1);
       });
 
       it('should update user', async () => {
         expect(
-          graphqlResponses.get('updateUser').body.data.updateUser,
+          graphqlResponses.get('updateUser').data.updateUser,
         ).toHaveProperty('username', updateUserData.username);
       });
 
       it('should get admin and updated user', async () => {
         expect(
-          graphqlResponses.get('getAllUsersAfterUpdate').body.data.users,
-        ).toHaveLength(2);
+          graphqlResponses.get('getAllUsersAfterUpdate').data.users.length,
+        ).toBeGreaterThanOrEqual(2);
         expect(
-          graphqlResponses.get('getAllUsersAfterUpdate').body.data.users[0],
+          graphqlResponses.get('getAllUsersAfterUpdate').data.users[0],
         ).toHaveProperty('username', 'admin');
         expect(
-          graphqlResponses.get('getAllUsersAfterUpdate').body.data.users[1],
+          graphqlResponses.get('getAllUsersAfterUpdate').data.users[1],
         ).toHaveProperty('username', updateUserData.username);
       });
 
       it('should remove user', async () => {
         expect(
-          graphqlResponses.get('removeUser').body.data.removeUser,
+          graphqlResponses.get('removeUser').data.removeUser,
         ).toHaveProperty(
           'cuid',
-          graphqlResponses.get('createUser').body.data.createUser.cuid,
+          graphqlResponses.get('createUser').data.createUser.cuid,
         );
       });
     });

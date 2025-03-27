@@ -3,6 +3,7 @@ import { CreateUserGroupInput } from './inputs/create-user-group.input';
 import { UpdateUserGroupInput } from './inputs/update-user-group.input';
 import { PrismaService } from '../prisma.service';
 import { Prisma } from '@prisma/client';
+import { UserGroup } from './entities/user-group.entity';
 
 @Injectable()
 export class UserGroupsService {
@@ -57,17 +58,19 @@ export class UserGroupsService {
     return this.prismaService.userGroup.findUniqueOrThrow({ where: { cuid } });
   }
 
-  findAllByUser(id: number) {
-    this.logger.debug('findAllByUser', { id });
+  async findAllByUser(userId: number) {
+    this.logger.debug('findAllByUser', { userId });
 
-    return this.prismaService.user.findUniqueOrThrow({
-      where: {
-        id,
-      },
-      include: {
-        groups: true,
-      },
-    });
+    return (
+      await this.prismaService.userUserGroup.findMany({
+        where: {
+          userId,
+        },
+        include: {
+          userGroup: true,
+        },
+      })
+    ).map((userUserGroup): UserGroup => userUserGroup.userGroup);
   }
 
   async update(cuid: string, updateTeamInput: UpdateUserGroupInput) {

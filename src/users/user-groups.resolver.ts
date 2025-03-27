@@ -20,7 +20,7 @@ export class UserGroupsResolver {
   private readonly logger = new Logger(UserGroupsResolver.name);
 
   constructor(
-    private readonly teamsService: UserGroupsService,
+    private readonly userGroupsService: UserGroupsService,
     private readonly usersService: UsersService,
   ) {}
 
@@ -28,7 +28,7 @@ export class UserGroupsResolver {
   findAll() {
     this.logger.debug('findAll');
 
-    return this.teamsService.findAll();
+    return this.userGroupsService.findAll();
   }
 
   @Query(() => UserGroup, { name: 'userGroup' })
@@ -37,7 +37,7 @@ export class UserGroupsResolver {
 
     try {
       // We need to await here in order to catch any error
-      return await this.teamsService.findOne(cuid);
+      return await this.userGroupsService.findOne(cuid);
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
@@ -60,7 +60,7 @@ export class UserGroupsResolver {
   ) {
     this.logger.debug('createUserGroup', { createUserGroupData });
 
-    return this.teamsService.create(createUserGroupData);
+    return this.userGroupsService.create(createUserGroupData);
   }
 
   @Mutation(() => UserGroup)
@@ -71,13 +71,13 @@ export class UserGroupsResolver {
   ) {
     this.logger.debug('updateUserGroup', { updateUserGroupData });
 
-    return this.teamsService.update(cuid, updateUserGroupData);
+    return this.userGroupsService.update(cuid, updateUserGroupData);
   }
 
   @Mutation(() => UserGroup)
   removeUserGroup(@Args('cuid', { type: () => String }) cuid: string) {
     this.logger.debug('removeUserGroup', { cuid });
 
-    return this.teamsService.remove(cuid);
+    return this.userGroupsService.remove(cuid);
   }
 }
