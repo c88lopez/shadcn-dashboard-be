@@ -11,6 +11,7 @@ describe('Auth e2e', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
+
     app = moduleFixture.createNestApplication();
     await app.init();
   });
