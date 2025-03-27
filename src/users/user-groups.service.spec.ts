@@ -18,6 +18,7 @@ describe('TeamsService', () => {
   });
 
   it('findAllByUser', async () => {
+    // Seeds makes sure the userId 1 exists
     const userId = 1;
     const result = await service.findAllByUser(userId);
 
