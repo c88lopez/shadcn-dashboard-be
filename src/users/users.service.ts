@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma.service';
 import { Prisma } from '@prisma/client';
 import { CreateUserInput } from './inputs/create-user.input';
 import { UpdateUserInput } from './inputs/update-user.input';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
@@ -155,12 +156,16 @@ export class UsersService {
     return this.findOne(cuid);
   }
 
-  remove(cuid: string) {
+  async remove(id: User['id']) {
     this.logger.debug('remove');
+
+    await this.prismaService.userUserGroup.deleteMany({
+      where: { userId: id },
+    });
 
     return this.prismaService.user.delete({
       where: {
-        cuid,
+        id,
       },
     });
   }

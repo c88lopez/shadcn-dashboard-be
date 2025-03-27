@@ -161,9 +161,14 @@ describe('User e2e', () => {
         expect(
           graphqlResponses.get('getAllUsersAfterUpdate').body.data.users[0],
         ).toHaveProperty('username', 'admin');
-        expect(
-          graphqlResponses.get('getAllUsersAfterUpdate').body.data.users[1],
-        ).toHaveProperty('username', updateUserData.username);
+
+        const updatedUser = graphqlResponses
+          .get('getAllUsersAfterUpdate')
+          .body.data.users.find(
+            (user) => user.username === updateUserData.username,
+          );
+
+        expect(updatedUser).toBeTruthy();
       });
 
       it('should remove user', async () => {

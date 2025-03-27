@@ -108,7 +108,7 @@ export class UsersResolver {
   async removeUser(@Args({ name: 'cuid', type: () => String }) cuid: string) {
     this.logger.debug('removeUser', { cuid });
 
-    let userToDelete = {};
+    let userToDelete: User | undefined;
 
     try {
       userToDelete = await this.usersService.findOne(cuid);
@@ -123,7 +123,7 @@ export class UsersResolver {
       throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    await this.usersService.remove(cuid);
+    await this.usersService.remove(userToDelete.id);
 
     return userToDelete;
   }

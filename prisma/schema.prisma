@@ -45,10 +45,10 @@ model UserGroup {
 }
 
 model UserUserGroup {
-  user   User @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int  @map("user_id")
 
-  userGroup   UserGroup @relation(fields: [userGroupId], references: [id])
+  userGroup   UserGroup @relation(fields: [userGroupId], references: [id], onDelete: Cascade)
   userGroupId Int       @map("user_group_id")
 
   assignedAt DateTime @default(now()) @map("assigned_at")

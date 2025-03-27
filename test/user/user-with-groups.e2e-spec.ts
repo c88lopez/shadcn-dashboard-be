@@ -49,6 +49,15 @@ describe('User e2e', () => {
 
       beforeAll(async () => {
         graphqlResponses.set(
+          'getAllGroups',
+          await request(app.getHttpServer())
+            .post('/graphql')
+            .set('content-type', 'application/json')
+            .set('Authorization', `Bearer ${response.body.access_token}`)
+            .send({ query: '{userGroups { cuid name }}' }),
+        );
+
+        graphqlResponses.set(
           'getAllUsers',
           await request(app.getHttpServer())
             .post('/graphql')
@@ -82,7 +91,15 @@ describe('User e2e', () => {
             .send({
               query:
                 'mutation CreateUser($createUserData: CreateUserInput!) { createUser(createUserData: $createUserData) { cuid email username }}',
-              variables: { createUserData },
+              variables: {
+                createUserData: {
+                  ...createUserData,
+                  groups: [
+                    graphqlResponses.get('getAllGroups').body.data.userGroups[0]
+                      .cuid,
+                  ],
+                },
+              },
             }),
         );
 
