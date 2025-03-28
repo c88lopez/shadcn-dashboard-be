@@ -7,6 +7,11 @@ describe('PlayersService', () => {
   let service: PlayersService;
   let prismaService: PrismaService;
 
+  const newPlayerInput: CreatePlayerInput = {
+    firstName: 'John',
+    lastName: 'Doe',
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [PlayersService, PrismaService],
@@ -30,11 +35,6 @@ describe('PlayersService', () => {
   });
 
   it('should create a player with just required data', async () => {
-    const newPlayerInput: CreatePlayerInput = {
-      firstName: 'John',
-      lastName: 'Doe',
-    };
-
     try {
       const newPlayer = await service.create(newPlayerInput);
 
@@ -48,9 +48,8 @@ describe('PlayersService', () => {
   });
 
   it('should create a player with full data', async () => {
-    const newPlayerInput: CreatePlayerInput = {
-      firstName: 'John',
-      lastName: 'Doe',
+    const newPlayerInputComplete: CreatePlayerInput = {
+      ...newPlayerInput,
 
       dateOfBirth: new Date('1990-01-01').getTime(),
 
@@ -59,77 +58,90 @@ describe('PlayersService', () => {
       instagram: 'https://www.instagram.com/johndoe',
     };
 
-    const newPlayer = await service.create(newPlayerInput);
+    const newPlayer = await service.create(newPlayerInputComplete);
 
     expect(newPlayer).toHaveProperty('cuid');
 
-    expect(newPlayer).toHaveProperty('firstName', newPlayerInput.firstName);
-    expect(newPlayer).toHaveProperty('lastName', newPlayerInput.lastName);
+    expect(newPlayer).toHaveProperty(
+      'firstName',
+      newPlayerInputComplete.firstName,
+    );
+    expect(newPlayer).toHaveProperty(
+      'lastName',
+      newPlayerInputComplete.lastName,
+    );
 
     expect(newPlayer).toHaveProperty(
       'dateOfBirth',
-      new Date(newPlayerInput.dateOfBirth),
+      new Date(newPlayerInputComplete.dateOfBirth),
     );
 
-    expect(newPlayer).toHaveProperty('phoneNumber', newPlayerInput.phoneNumber);
-    expect(newPlayer).toHaveProperty('email', newPlayerInput.email);
-    expect(newPlayer).toHaveProperty('instagram', newPlayerInput.instagram);
+    expect(newPlayer).toHaveProperty(
+      'phoneNumber',
+      newPlayerInputComplete.phoneNumber,
+    );
+    expect(newPlayer).toHaveProperty('email', newPlayerInputComplete.email);
+    expect(newPlayer).toHaveProperty(
+      'instagram',
+      newPlayerInputComplete.instagram,
+    );
   });
 
   it('should not create a player with no first name', async () => {
-    const newPlayerInput: Omit<CreatePlayerInput, 'firstName'> = {
+    const badPlayerInput: Omit<CreatePlayerInput, 'firstName'> = {
       lastName: 'Doe',
     };
 
     await expect(
-      service.create(newPlayerInput as unknown as CreatePlayerInput),
+      service.create(badPlayerInput as unknown as CreatePlayerInput),
     ).rejects.toThrow('first name is required');
   });
 
   it('should not create a player with empty first name', async () => {
-    const newPlayerInput: CreatePlayerInput = {
+    const badPlayerInput: CreatePlayerInput = {
       firstName: '',
       lastName: 'Doe',
     };
 
     await expect(
-      service.create(newPlayerInput as unknown as CreatePlayerInput),
+      service.create(badPlayerInput as unknown as CreatePlayerInput),
     ).rejects.toThrow('first name must be at least 2 characters');
   });
 
   it('should not create a player with string date of birth', async () => {
-    const newPlayerInput: CreatePlayerInput = {
+    const badPlayerInput: CreatePlayerInput = {
       firstName: 'John',
       lastName: 'Doe',
 
       dateOfBirth: 'asd' as unknown as number,
     };
     await expect(
-      service.create(newPlayerInput as unknown as CreatePlayerInput),
+      service.create(badPlayerInput as unknown as CreatePlayerInput),
     ).rejects.toThrow('Expected number, received string');
   });
 
   it('should not create a player with invalid (old) date of birth', async () => {
-    const newPlayerInput: CreatePlayerInput = {
+    const badPlayerInput: CreatePlayerInput = {
       firstName: 'John',
       lastName: 'Doe',
 
       dateOfBirth: new Date('1800-01-01').getTime(),
     };
+
     await expect(
-      service.create(newPlayerInput as unknown as CreatePlayerInput),
+      service.create(badPlayerInput as unknown as CreatePlayerInput),
     ).rejects.toThrow('date of birth should be realistic');
   });
 
   it('should not create a player with invalid (future) date of birth', async () => {
-    const newPlayerInput: CreatePlayerInput = {
+    const badPlayerInput: CreatePlayerInput = {
       firstName: 'John',
       lastName: 'Doe',
 
       dateOfBirth: new Date('1800-01-01').getTime(),
     };
     await expect(
-      service.create(newPlayerInput as unknown as CreatePlayerInput),
+      service.create(badPlayerInput as unknown as CreatePlayerInput),
     ).rejects.toThrow('date of birth should be realistic');
   });
 });
