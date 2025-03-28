@@ -96,4 +96,40 @@ describe('PlayersService', () => {
       service.create(newPlayerInput as unknown as CreatePlayerInput),
     ).rejects.toThrow('first name must be at least 2 characters');
   });
+
+  it('should not create a player with string date of birth', async () => {
+    const newPlayerInput: CreatePlayerInput = {
+      firstName: 'John',
+      lastName: 'Doe',
+
+      dateOfBirth: 'asd' as unknown as number,
+    };
+    await expect(
+      service.create(newPlayerInput as unknown as CreatePlayerInput),
+    ).rejects.toThrow('Expected number, received string');
+  });
+
+  it('should not create a player with invalid (old) date of birth', async () => {
+    const newPlayerInput: CreatePlayerInput = {
+      firstName: 'John',
+      lastName: 'Doe',
+
+      dateOfBirth: new Date('1800-01-01').getTime(),
+    };
+    await expect(
+      service.create(newPlayerInput as unknown as CreatePlayerInput),
+    ).rejects.toThrow('date of birth should be realistic');
+  });
+
+  it('should not create a player with invalid (future) date of birth', async () => {
+    const newPlayerInput: CreatePlayerInput = {
+      firstName: 'John',
+      lastName: 'Doe',
+
+      dateOfBirth: new Date('1800-01-01').getTime(),
+    };
+    await expect(
+      service.create(newPlayerInput as unknown as CreatePlayerInput),
+    ).rejects.toThrow('date of birth should be realistic');
+  });
 });
