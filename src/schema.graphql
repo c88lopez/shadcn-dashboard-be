@@ -23,6 +23,8 @@ type User {
 
   """Public user name of the user"""
   username: String!
+
+  """User's groups"""
   groups: [UserGroup!]
 }
 

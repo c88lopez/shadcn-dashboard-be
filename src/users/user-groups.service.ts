@@ -9,7 +9,7 @@ import { UserGroup } from './entities/user-group.entity';
 export class UserGroupsService {
   private readonly logger = new Logger(UserGroupsService.name);
 
-  constructor(private prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async create(createTeamInput: CreateUserGroupInput) {
     this.logger.debug('create', { createTeamInput });

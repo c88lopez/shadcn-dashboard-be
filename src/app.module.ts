@@ -11,6 +11,7 @@ import { GraphQLFormattedError } from 'graphql/error';
 import { APP_FILTER } from '@nestjs/core';
 import { GraphqlExceptionFilter } from './graphql-exception.filter';
 import { AuthModule } from './auth/auth.module';
+import { MatchesModule } from './matches/matches.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { AuthModule } from './auth/auth.module';
       }),
     }),
     AuthModule,
+    MatchesModule,
   ],
   controllers: [AppController],
   providers: [

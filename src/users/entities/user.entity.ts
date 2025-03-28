@@ -14,7 +14,7 @@ export class User {
   @Field({ description: 'Public user name of the user' })
   username: string;
 
-  @Field(() => [UserGroup], { nullable: true })
+  @Field(() => [UserGroup], { description: "User's groups", nullable: true })
   groups?: UserGroup[];
 
   password: string;

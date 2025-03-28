@@ -4,16 +4,15 @@ import { PrismaService } from '../prisma.service';
 import { Prisma } from '@prisma/client';
 import { CreateUserInput } from './inputs/create-user.input';
 import { UpdateUserInput } from './inputs/update-user.input';
-import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
 
-  constructor(private prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async create(createUserInput: CreateUserInput) {
-    this.logger.debug('create');
+    this.logger.debug('create', { createUserInput });
 
     try {
       const hashedPassword = await bcrypt.hash(createUserInput.password, 10);
@@ -156,7 +155,7 @@ export class UsersService {
     return this.findOne(cuid);
   }
 
-  async remove(id: User['id']) {
+  async remove(id) {
     this.logger.debug('remove');
 
     await this.prismaService.userUserGroup.deleteMany({
