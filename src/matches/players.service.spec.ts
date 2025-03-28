@@ -83,7 +83,7 @@ describe('PlayersService', () => {
 
     await expect(
       service.create(newPlayerInput as unknown as CreatePlayerInput),
-    ).rejects.toThrowError('first name is required');
+    ).rejects.toThrow('first name is required');
   });
 
   it('should not create a player with empty first name', async () => {
@@ -94,6 +94,6 @@ describe('PlayersService', () => {
 
     await expect(
       service.create(newPlayerInput as unknown as CreatePlayerInput),
-    ).rejects.toThrowError('first name must be at least 2 characters');
+    ).rejects.toThrow('first name must be at least 2 characters');
   });
 });
