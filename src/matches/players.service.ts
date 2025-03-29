@@ -3,6 +3,8 @@ import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CreatePlayerSchema } from '@vandelay-labs/schemas';
 import { PrismaService } from '../prisma.service';
 import { CreatePlayerInput } from './inputs/create-player.input';
+import { UpdatePlayerInput } from './inputs/update-player.input';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PlayersService {
@@ -59,6 +61,34 @@ export class PlayersService {
     this.logger.debug('findOne', { cuid });
 
     return this.prismaService.player.findUnique({
+      where: {
+        cuid,
+      },
+    });
+  }
+
+  update(cuid: string, updatePlayerInput: UpdatePlayerInput) {
+    this.logger.debug('update', { cuid, updatePlayerInput });
+
+    const dateOfBirth = new Date(updatePlayerInput.dateOfBirth);
+
+    const data: Prisma.PlayerUpdateInput = {
+      ...updatePlayerInput,
+      dateOfBirth: updatePlayerInput.dateOfBirth ? dateOfBirth : undefined,
+    };
+
+    return this.prismaService.player.update({
+      where: {
+        cuid,
+      },
+      data,
+    });
+  }
+
+  remove(cuid: string) {
+    this.logger.debug('remove', { cuid });
+
+    return this.prismaService.player.delete({
       where: {
         cuid,
       },
