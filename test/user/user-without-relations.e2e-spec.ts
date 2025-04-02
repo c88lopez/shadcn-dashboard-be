@@ -2,6 +2,7 @@ import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../src/app.module';
+import { PrismaService } from '../../src/prisma.service';
 
 describe('User e2e', () => {
   let app: INestApplication;
@@ -16,6 +17,16 @@ describe('User e2e', () => {
   });
 
   afterAll(async () => {
+    const prismaService = app.get(PrismaService);
+
+    await prismaService.user.deleteMany({
+      where: {
+        email: {
+          not: 'admin@vandelay-labs.com',
+        },
+      },
+    });
+
     await app.close();
   });
 
@@ -178,6 +189,61 @@ describe('User e2e', () => {
           'cuid',
           graphqlResponses.get('createUser').body.data.createUser.cuid,
         );
+      });
+
+      it('should not create user with invalid email', async () => {
+        const errorResponse = await request(app.getHttpServer())
+          .post('/graphql')
+          .set('content-type', 'application/json')
+          .set('Authorization', `Bearer ${response.body.access_token}`)
+          .send({
+            query:
+              'mutation CreateUser($createUserData: CreateUserInput!) { createUser(createUserData: $createUserData) { cuid email username }}',
+            variables: {
+              createUserData: {
+                ...createUserData,
+                email: 'I am not valid email',
+              },
+            },
+          });
+
+        expect(errorResponse.status).toBe(200);
+        expect(errorResponse.body.errors).toHaveLength(1);
+        expect(errorResponse.body.errors[0]).toHaveProperty(
+          'message',
+          'invalid email',
+        );
+      });
+
+      it('should not update user with invalid email', async () => {
+        const createUserResponse = await request(app.getHttpServer())
+          .post('/graphql')
+          .set('content-type', 'application/json')
+          .set('Authorization', `Bearer ${response.body.access_token}`)
+          .send({
+            query:
+              'mutation CreateUser($createUserData: CreateUserInput!) { createUser(createUserData: $createUserData) { cuid email username }}',
+            variables: {
+              createUserData,
+            },
+          });
+
+        const updateUserResponse = await request(app.getHttpServer())
+          .post('/graphql')
+          .set('content-type', 'application/json')
+          .set('Authorization', `Bearer ${response.body.access_token}`)
+          .send({
+            query:
+              'mutation UpdateUser($cuid: String!, $updateUserData: UpdateUserInput!) { updateUser(cuid: $cuid, updateUserData: $updateUserData) { username }}',
+            variables: {
+              cuid: createUserResponse.body.data.createUser.cuid,
+              updateUserData: {
+                email: 'I am not valid email',
+              },
+            },
+          });
+
+        expect(updateUserResponse.status).toBe(200);
       });
     });
   });

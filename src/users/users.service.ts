@@ -1,7 +1,14 @@
 import * as bcrypt from 'bcrypt';
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '../prisma.service';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
+
 import { Prisma } from '@prisma/client';
+import { PrismaService } from '../prisma.service';
+
 import { CreateUserInput } from './inputs/create-user.input';
 import { UpdateUserInput } from './inputs/update-user.input';
 
@@ -38,26 +45,20 @@ export class UsersService {
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
-          throw new HttpException(
-            'User with this email already exists',
-            HttpStatus.BAD_REQUEST,
-          );
+          throw new BadRequestException('User with this email already exists');
         }
 
         if (error.code === 'P2025') {
-          throw new HttpException(
-            'Invalid list of teams',
-            HttpStatus.BAD_REQUEST,
-          );
+          throw new BadRequestException('Invalid list of teams');
         }
       }
 
       if (error instanceof Prisma.PrismaClientValidationError) {
-        throw new HttpException('Invalid payload', HttpStatus.BAD_REQUEST);
+        throw new BadRequestException('Invalid payload');
       }
 
       this.logger.error(error);
-      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new InternalServerErrorException('Server error');
     }
   }
 

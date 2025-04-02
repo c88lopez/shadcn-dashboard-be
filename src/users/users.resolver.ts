@@ -14,13 +14,15 @@ import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { HttpException, HttpStatus, Logger, UseGuards } from '@nestjs/common';
 
-import { UserCreateSchema, UserUpdateSchema } from 'schemas';
+import { UserUpdateSchema } from 'schemas';
 import { GqlAuthGuard } from '../auth/gql-auth.guard';
 import { Prisma } from '@prisma/client';
 import { GraphQLException } from '@nestjs/graphql/dist/exceptions';
 import { UpdateUserInput } from './inputs/update-user.input';
 import { CreateUserInput } from './inputs/create-user.input';
 import { UserGroupsService } from './user-groups.service';
+import { ZodValidationPipe } from '../pipes/zod-validation-pipe';
+import { UserCreateSchema } from '@vandelay-labs/schemas';
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -64,40 +66,28 @@ export class UsersResolver {
   }
 
   @Mutation(() => User)
-  createUser(
-    @Args({ name: 'createUserData', type: () => CreateUserInput })
+  async createUser(
+    @Args(
+      { name: 'createUserData', type: () => CreateUserInput },
+      new ZodValidationPipe(UserCreateSchema),
+    )
     createUserData: CreateUserInput,
   ) {
     this.logger.debug('createUser', { createUserData });
 
-    const validation = UserCreateSchema.safeParse(createUserData);
-
-    if (!validation.success) {
-      throw new HttpException(
-        validation.error.issues[0].message,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    return this.usersService.create(createUserData);
+    return await this.usersService.create(createUserData);
   }
 
   @Mutation(() => User)
   async updateUser(
     @Args({ name: 'cuid', type: () => String }) cuid: string,
-    @Args({ name: 'updateUserData', type: () => UpdateUserInput })
+    @Args(
+      { name: 'updateUserData', type: () => UpdateUserInput },
+      new ZodValidationPipe(UserUpdateSchema),
+    )
     updateUserData: UpdateUserInput,
   ) {
     this.logger.debug('updateUser', { cuid, updateUserData });
-
-    const validation = UserUpdateSchema.safeParse(updateUserData);
-
-    if (!validation.success) {
-      throw new HttpException(
-        validation.error.issues[0].message,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
 
     if (updateUserData.password) {
       updateUserData.password = await bcrypt.hash(updateUserData.password, 10);
