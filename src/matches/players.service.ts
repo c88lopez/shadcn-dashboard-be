@@ -1,6 +1,12 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 
-import { CreatePlayerSchema } from '@vandelay-labs/schemas';
+import { CreatePlayerSchema, UpdatePlayerSchema } from '@vandelay-labs/schemas';
 import { PrismaService } from '../prisma.service';
 import { CreatePlayerInput } from './inputs/create-player.input';
 import { UpdatePlayerInput } from './inputs/update-player.input';
@@ -69,6 +75,12 @@ export class PlayersService {
 
   update(cuid: string, updatePlayerInput: UpdatePlayerInput) {
     this.logger.debug('update', { cuid, updatePlayerInput });
+
+    const schemaValidation = UpdatePlayerSchema.safeParse(updatePlayerInput);
+
+    if (!schemaValidation.success) {
+      throw new BadRequestException(schemaValidation.error.issues[0].message);
+    }
 
     const dateOfBirth = new Date(updatePlayerInput.dateOfBirth);
 

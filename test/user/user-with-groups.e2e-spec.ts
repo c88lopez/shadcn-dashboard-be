@@ -3,6 +3,7 @@ import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../src/app.module';
+import { PrismaClient } from '@prisma/client';
 
 describe('User e2e', () => {
   let app: INestApplication;
@@ -17,6 +18,14 @@ describe('User e2e', () => {
   });
 
   afterAll(async () => {
+    await app.get(PrismaClient).user.deleteMany({
+      where: {
+        email: {
+          not: 'admin@vandelay-labs.com',
+        },
+      },
+    });
+
     await app.close();
   });
 
@@ -38,7 +47,7 @@ describe('User e2e', () => {
 
     describe('CRUD operations', () => {
       const createUserData = {
-        username: 'new-username',
+        username: 'new-username-groups',
         email: 'with-groups@vandelay.com',
         password: '234234234',
       };
@@ -96,8 +105,11 @@ describe('User e2e', () => {
               .set('content-type', 'application/json')
               .set('Authorization', `Bearer ${response.body.access_token}`)
               .send({
-                query:
-                  'mutation CreateUser($createUserData: CreateUserInput!) { createUser(createUserData: $createUserData) { cuid email username groups { cuid } }}',
+                query: `mutation CreateUser($createUserData: CreateUserInput!) { 
+                  createUser(createUserData: $createUserData) { 
+                    cuid email username 
+                    groups { cuid } }
+                }`,
                 variables: {
                   createUserData: {
                     ...createUserData,
@@ -119,8 +131,11 @@ describe('User e2e', () => {
               .set('content-type', 'application/json')
               .set('Authorization', `Bearer ${response.body.access_token}`)
               .send({
-                query:
-                  'mutation UpdateUser($cuid: String!, $updateUserData: UpdateUserInput!) { updateUser(cuid: $cuid, updateUserData: $updateUserData) { username }}',
+                query: `mutation UpdateUser($cuid: String!, $updateUserData: UpdateUserInput!) { 
+                  updateUser(cuid: $cuid, updateUserData: $updateUserData) {
+                   username 
+                  }
+                }`,
                 variables: {
                   cuid: graphqlResponses.get('createUser').data.createUser.cuid,
                   updateUserData,

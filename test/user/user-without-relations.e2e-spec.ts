@@ -48,7 +48,7 @@ describe('User e2e', () => {
 
     describe('CRUD operations', () => {
       const createUserData = {
-        username: 'new-username',
+        username: 'new-username-no-groups',
         email: 'without-groups@vandelay.com',
         password: '234234234',
       };

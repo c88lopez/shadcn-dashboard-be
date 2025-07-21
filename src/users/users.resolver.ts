@@ -14,7 +14,6 @@ import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { HttpException, HttpStatus, Logger, UseGuards } from '@nestjs/common';
 
-import { UserUpdateSchema } from 'schemas';
 import { GqlAuthGuard } from '../auth/gql-auth.guard';
 import { Prisma } from '@prisma/client';
 import { GraphQLException } from '@nestjs/graphql/dist/exceptions';
@@ -22,7 +21,7 @@ import { UpdateUserInput } from './inputs/update-user.input';
 import { CreateUserInput } from './inputs/create-user.input';
 import { UserGroupsService } from './user-groups.service';
 import { ZodValidationPipe } from '../pipes/zod-validation-pipe';
-import { UserCreateSchema } from '@vandelay-labs/schemas';
+import { UserCreateSchema, UserUpdateSchema } from '@vandelay-labs/schemas';
 
 @Resolver(() => User)
 export class UsersResolver {
