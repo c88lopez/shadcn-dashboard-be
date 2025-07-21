@@ -1,9 +1,13 @@
-import { Catch, ExceptionFilter } from '@nestjs/common';
-import { GraphQLException } from '@nestjs/graphql/dist/exceptions';
+import { Catch, ArgumentsHost, Logger } from "@nestjs/common";
+import { GqlExceptionFilter } from "@nestjs/graphql";
+import { GqlUserException } from "./common/exceptions/gql-user.exception";
 
-@Catch(GraphQLException)
-export class GraphqlExceptionFilter implements ExceptionFilter {
-  catch(exception: any, host: any) {
+@Catch(GqlUserException)
+export class GraphqlExceptionFilter implements GqlExceptionFilter {
+  private readonly logger = new Logger(GraphqlExceptionFilter.name);
+
+  catch(exception: GqlUserException, host: ArgumentsHost) {
+    this.logger.error(exception);
     // We just catch and throw to avoid NestJS from logging the exception.
     throw exception;
   }

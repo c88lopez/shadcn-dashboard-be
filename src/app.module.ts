@@ -23,9 +23,6 @@ import { MatchesModule } from './matches/matches.module';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: 'src/schema.graphql',
-      formatError: (error: GraphQLFormattedError): GraphQLFormattedError => ({
-        message: error.message,
-      }),
     }),
     AuthModule,
     MatchesModule,
