@@ -16,9 +16,9 @@ This document outlines 10 potential areas of improvement for the backend project
 
 ### 3. Strengthen Security with Helmet
 
-**Observation:** The application is not currently using `helmet`, a middleware that sets various HTTP headers to improve security.
+**Observation:** The application was not currently using `helmet`, a middleware that sets various HTTP headers to improve security.
 
-**Suggestion:** Add the `helmet` middleware to the application. This is a simple but effective way to protect against common web vulnerabilities like cross-site scripting (XSS) and clickjacking.
+**Update:** Added the `helmet` middleware to the application. This is a simple but effective way to protect against common web vulnerabilities like cross-site scripting (XSS) and clickjacking.
 
 ### 4. Implement Rate Limiting
 

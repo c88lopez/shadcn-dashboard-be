@@ -38,6 +38,7 @@
     "@vandelay-labs/schemas": "file:../schemas",
     "bcrypt": "^5.1.1",
     "graphql": "^16.10.0",
+    "helmet": "^8.1.0",
     "nestjs-pino": "^4.4.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
