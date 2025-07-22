@@ -12,12 +12,23 @@ import { APP_FILTER } from '@nestjs/core';
 import { GraphqlExceptionFilter } from './graphql-exception.filter';
 import { AuthModule } from './auth/auth.module';
 import { MatchesModule } from './matches/matches.module';
+import { LoggerModule } from 'nestjs-pino';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: './.env.local',
       expandVariables: true,
+    }),
+    LoggerModule.forRoot({
+      pinoHttp: {
+        transport: {
+          target: 'pino-pretty',
+          options: {
+            singleLine: true,
+          },
+        },
+      },
     }),
     UsersModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
