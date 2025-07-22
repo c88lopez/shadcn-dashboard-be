@@ -4,9 +4,9 @@ This document outlines 10 potential areas of improvement for the backend project
 
 ### 1. Implement a More Robust Logging Strategy
 
-**Observation:** The current logging is basic, relying on `ConsoleLogger`. While functional, it lacks the flexibility of a more robust logging solution.
+**Observation:** The current logging is basic, relying on `ConsoleLogger`. While functional, it lacked the flexibility of a more robust logging solution.
 
-**Suggestion:** Integrate a more powerful logging library like `winston` or `pino`. This would allow for structured logging, different log levels (e.g., `info`, `warn`, `error`), and the ability to send logs to various destinations (e.g., files, external services like Datadog or Sentry).
+**Update:** Integrated `pino` for structured logging, different log levels (e.g., `info`, `warn`, `error`), and the ability to send logs to various destinations (e.g., files, external services like Datadog or Sentry).
 
 ### 2. Enhance Configuration Management
 
