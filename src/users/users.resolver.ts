@@ -68,7 +68,7 @@ export class UsersResolver {
   async createUser(
     @Args(
       { name: 'createUserData', type: () => CreateUserInput },
-      new ZodValidationPipe(UserCreateSchema),
+      new ZodValidationPipe(UserCreateSchema as any),
     )
     createUserData: CreateUserInput,
   ) {
@@ -82,7 +82,7 @@ export class UsersResolver {
     @Args({ name: 'cuid', type: () => String }) cuid: string,
     @Args(
       { name: 'updateUserData', type: () => UpdateUserInput },
-      new ZodValidationPipe(UserUpdateSchema),
+      new ZodValidationPipe(UserUpdateSchema as any),
     )
     updateUserData: UpdateUserInput,
   ) {

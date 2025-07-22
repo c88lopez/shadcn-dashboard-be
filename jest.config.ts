@@ -3,6 +3,7 @@ import type { Config } from 'jest';
 const config: Config = {
   preset: 'ts-jest',
   testEnvironment: 'node',
+  globalSetup: '../jest-global-setup.ts',
   rootDir: 'src',
   testPathIgnorePatterns: ['<rootDir>/dist/'],
   testRegex: '.*\\.spec\\.ts$',

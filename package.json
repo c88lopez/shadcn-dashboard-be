@@ -17,11 +17,11 @@
     "prisma:db:seed:local": "dotenv -e .env.local -- prisma db seed",
     "prisma:db:push:test": "dotenv -e .env.test -- prisma db push --skip-generate",
     "prisma:db:seed:test": "dotenv -e .env.test -- prisma db seed",
-    "test": "dotenv -e .env.test -- jest",
+    "test": "cross-env NODE_ENV=test jest",
     "test:watch": "jest --watch",
-    "test:cov": "dotenv -e .env.test -- jest --coverage",
+    "test:cov": "cross-env NODE_ENV=test jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "dotenv -e .env.test -- jest --config ./test/jest-e2e.json"
+    "test:e2e": "cross-env NODE_ENV=test jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@apollo/server": "^4.11.3",
@@ -63,6 +63,8 @@
     "@types/supertest": "^6.0.2",
     "@typescript-eslint/eslint-plugin": "^8.23.0",
     "@typescript-eslint/parser": "^8.23.0",
+    "cross-env": "^7.0.3",
+    "dotenv": "^17.2.0",
     "eslint": "^9.20.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.3",

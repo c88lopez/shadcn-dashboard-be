@@ -28,9 +28,9 @@ This document outlines 10 potential areas of improvement for the backend project
 
 ### 5. Improve Test Coverage
 
-**Observation:** While there are some tests, the coverage could be improved. For example, there are no tests for the `auth` module.
+**Observation:** While there were some tests, the coverage could be improved. For example, there were no tests for the `auth` module.
 
-**Suggestion:** Write comprehensive unit and integration tests for all critical parts of the application, especially the `auth` module. This will help to ensure the application is working as expected and prevent regressions.
+**Update:** Added comprehensive unit tests for `auth.service.ts` and fixed existing test issues, improving overall test coverage.
 
 ### 6. Add a Health Check Endpoint
 
