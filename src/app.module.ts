@@ -9,7 +9,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { GraphQLFormattedError } from 'graphql/error';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { GraphqlExceptionFilter } from './graphql-exception.filter';
 import { AuthModule } from './auth/auth.module';
 import { MatchesModule } from './matches/matches.module';
@@ -32,6 +33,12 @@ import { LoggerModule } from 'nestjs-pino';
         },
       },
     }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 100,
+      },
+    ]),
     UsersModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
@@ -44,6 +51,7 @@ import { LoggerModule } from 'nestjs-pino';
   providers: [
     AppService,
     { provide: APP_FILTER, useClass: GraphqlExceptionFilter },
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })
 export class AppModule {}

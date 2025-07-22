@@ -22,9 +22,9 @@ This document outlines 10 potential areas of improvement for the backend project
 
 ### 4. Implement Rate Limiting
 
-**Observation:** There is no rate-limiting mechanism in place, which makes the application vulnerable to brute-force attacks and denial-of-service (DoS) attacks.
+**Observation:** There was no rate-limiting mechanism in place, which made the application vulnerable to brute-force attacks and denial-of-service (DoS) attacks.
 
-**Suggestion:** Add a rate-limiting module like `nestjs-throttler` to limit the number of requests a user can make in a given time frame. This is a crucial security measure for any public-facing API.
+**Update:** Added a rate-limiting module (`@nestjs/throttler`) to limit the number of requests a user can make in a given time frame. This is a crucial security measure for any public-facing API.
 
 ### 5. Improve Test Coverage
 
