@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { configSchema } from './config.schema';
 
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
@@ -19,6 +20,7 @@ import { LoggerModule } from 'nestjs-pino';
     ConfigModule.forRoot({
       envFilePath: './.env.local',
       expandVariables: true,
+      validate: (config) => configSchema.parse(config),
     }),
     LoggerModule.forRoot({
       pinoHttp: {

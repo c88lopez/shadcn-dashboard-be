@@ -10,9 +10,9 @@ This document outlines 10 potential areas of improvement for the backend project
 
 ### 2. Enhance Configuration Management
 
-**Observation:** The project uses `.env.local` for local configuration, which is a good start. However, there's no clear validation or schema for the environment variables.
+**Observation:** The project uses `.env.local` for local configuration, which is a good start. However, there was no clear validation or schema for the environment variables.
 
-**Suggestion:** Implement a validation layer for environment variables using a library like `@nestjs/config` with Joi or Zod. This would ensure that all required environment variables are present and have the correct types, preventing runtime errors.
+**Update:** Implemented a validation layer for environment variables using `Zod` to ensure all required environment variables are present and have the correct types, preventing runtime errors.
 
 ### 3. Strengthen Security with Helmet
 
